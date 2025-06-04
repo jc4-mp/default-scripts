@@ -1,4 +1,4 @@
-Event.Add("ClientJoin", function()
+Event.Add("ResourceStart", function(name)
 	local localPlayer = Players.Local():GetGamePlayer()
 	
 	localPlayer:EnableAbility(Ability.GrapplingHook)
