@@ -1,8 +1,7 @@
 Event.Add("ResourceStart", function(name)
-	local localPlayer = Players.Local():GetGamePlayer()
-	
-	localPlayer:EnableAbility(Ability.GrapplingHook)
-	localPlayer:EnableAbility(Ability.Parachute)
-	localPlayer:EnableAbility(Ability.Wingsuit)
-	localPlayer:EnableAbility(Ability.ExitVehicle)
+	Local.UnlockAbility(Ability.GrapplingHook)
+	Local.UnlockAbility(Ability.Parachute)
+	Local.UnlockAbility(Ability.Wingsuit)
+	Local.UnlockAbility(Ability.Hammer)
+	Local.UnlockAbility(Ability.ExitVehicle)
 end)
