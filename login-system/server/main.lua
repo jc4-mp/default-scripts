@@ -1,8 +1,11 @@
 local TableResult = SQL.Execute([[
     CREATE TABLE IF NOT EXISTS accounts (
-		steam_id TEXT PRIMARY KEY NOT NULL
-    )
-]])
+		steam_id TEXT PRIMARY KEY NOT NULL,
+        last_seen DATETIME DEFAULT CURRENT_TIMESTAMP,
+		x FLOAT DEFAULT NULL,
+		y FLOAT DEFAULT NULL,
+		z FLOAT DEFAULT NULL
+    )]])
 
 if TableResult.success then
     print("Accounts table created successfully")
@@ -21,24 +24,47 @@ function LoadPlayer(client)
 	
 	-- get this player's info
 	
-	local entries = SQL.Query("SELECT steam_id FROM accounts WHERE steam_id = ?", steamId)
+	local entries = SQL.Query("SELECT steam_id, x, y, z FROM accounts WHERE steam_id = ?", steamId)
 	if #entries == 1 then
-		print("Player " .. steamId .. " logged in: ")
+		-- load player's info
+		
+		local entry = entries[1]
+		
+		if entry.x and entry.y and entry.z then
+			Net.SendToTarget(client, "loadPlayerInfo", entry.x, entry.y, entry.z)
+		end
+		
+		print("Player " .. steamId .. " logged in")
 	else
 		print("Player " .. steamId .." is not allowed to register")
 	end
 end
 
--- temp shit for now, we don't have ClientResourceStart yet
+function SavePlayer(client)
+	if not TableResult.success then return end
 
-Event.Add("ResourceStart", function(name)
+	local steamId = client:GetSteamId()
+	local player = client:GetNetPlayer()
+	local playerPos = player:GetPosition()
+	
+	local result = SQL.Execute([[
+		UPDATE accounts
+		SET x = ?, y = ?, z = ?, last_seen = CURRENT_TIMESTAMP
+		WHERE steam_id = ?]], playerPos.x, playerPos.y, playerPos.z, steamId)
+	
+	if result.success then
+		print("Player " .. steamId .. " saved")
+	else
+		print("Player " .. steamId .." could not be saved:", result.error)
+	end
+end
+
+Event.Add("PlayerResourceStart", function(client, name)
 	if Resource.Name ~= name then return end
 	
-	for k, v in pairs(Players.GetJoined()) do
-		LoadPlayer(v)
-	end
+	LoadPlayer(client)
 end)
 
-Event.Add("PlayerJoin", function(client)
-	LoadPlayer(client)
+Event.Add("PlayerQuit", function(client)
+	SavePlayer(client)
 end)
