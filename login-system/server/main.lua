@@ -31,9 +31,12 @@ function LoadPlayer(client)
 		local entry = entries[1]
 		
 		if entry.x and entry.y and entry.z then
-			Net.SendToTarget(client, "loadPlayerInfo", entry.x, entry.y, entry.z)
+			local position = vec3(entry.x, entry.y, entry.z)
+			
+			Net.SendToTarget(client, "loadPlayerInfo", position)
 		end
-		
+
+			
 		print("Player " .. steamId .. " logged in")
 	else
 		print("Player " .. steamId .." is not allowed to register")
@@ -59,8 +62,8 @@ function SavePlayer(client)
 	end
 end
 
-Event.Add("PlayerResourceStart", function(client, name)
-	if Resource.Name ~= name then return end
+Event.Add("PlayerResourceAction", function(client, name, action)
+	if Resource.Name ~= name or action ~= ResourceAction.Start then return end
 	
 	LoadPlayer(client)
 end)
