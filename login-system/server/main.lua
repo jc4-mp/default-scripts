@@ -35,7 +35,6 @@ function LoadPlayer(client)
 			
 			Net.SendToTarget(client, "loadPlayerInfo", position)
 		end
-
 			
 		print("Player " .. steamId .. " logged in")
 	else
