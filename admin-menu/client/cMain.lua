@@ -51,7 +51,6 @@ Net.AddEvent("admin_menu_response", function(resource_list)
 end)
 
 Net.AddEvent("resource_action_result", function(success, message)
-    local color = success and Color.Green or Color.Red
     Chat.Print(message)
 
     if open then
