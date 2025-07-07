@@ -19,19 +19,25 @@ local weapons =
     "wpn_050_smg"
 }
 
-function respawnPlayer(player)
+function respawnPlayer(player, time)
 	Timer.Set(function(player)
         player:Respawn(spawnpoints[math.random(1, #spawnpoints)])
         player:GiveWeapon(weapons[math.random(1, #weapons)], 240, true, WeaponSlot.Primary)
 
         print(weapons[math.random(1, #weapons)])
-    end, 2500, 1, player)
+    end, time, 1, player)
 end
 
 Event.Add("PlayerJoin", function(client)
-    respawnPlayer(client:GetNetPlayer())
+    respawnPlayer(client:GetNetPlayer(), 2500)
 end)
 
 Event.Add("PlayerKilled", function(player, damager, loss, hitBone, weapon, position)
-    respawnPlayer(player)
+    respawnPlayer(player, 2500)
+end)
+
+Event.Add("PlayerResourceAction", function(client, name, action)
+    if Resource.Name == name and action == ResourceAction.Start then
+        respawnPlayer(client:GetNetPlayer(), 500)
+    end
 end)
