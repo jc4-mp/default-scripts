@@ -1,5 +1,5 @@
-local locations = require("cTeleportLocations")
-local helpers = require("cHelpers")
+local locations = require("teleport_locations")
+local helpers = require("helpers")
 local open_key = Key.G
 local hovered_location_index_this_frame = nil
 

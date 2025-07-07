@@ -1,4 +1,4 @@
-local spawnlist = require("cSpawnList")
+local spawnlist = require("spawn_list")
 
 local open = false
 local selection = { category = 0, item_index = 0 }
