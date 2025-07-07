@@ -33,7 +33,7 @@ function LoadPlayer(client)
 		if entry.x and entry.y and entry.z then
 			local position = vec3(entry.x, entry.y, entry.z)
 			
-			--Net.SendToTarget(client, "loadPlayerInfo", position)
+			Net.SendToTarget(client, "loadPlayerInfo", position)
 		end
 			
 		print("Player " .. steamId .. " logged in")
