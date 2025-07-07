@@ -8,11 +8,6 @@ local last_update = 0
 local update_interval = 5 -- Update resource list every 5 seconds
 local selected_tab = 0
 
--- UI state
-local show_confirmation = false
-local confirmation_action = nil
-local confirmation_resource = nil
-
 function toggleOpen()
     if not has_permission then
         Chat.Print("You don't have permission to access the admin menu.")
@@ -29,13 +24,13 @@ function toggleOpen()
 end
 
 function requestResourceList()
-    Net.Send("admin_menu_request", Players.Local())
+    Net.Send("admin_menu_request")
 end
 
 function performResourceAction(resource_name, action)
     if not resource_name or not action then return end
     
-    Net.Send("resource_action", Players.Local(), resource_name, action)
+    Net.Send("resource_action", resource_name, action)
     Chat.Print("Performing " .. action .. " on resource: " .. resource_name)
 end
 
@@ -62,13 +57,6 @@ Net.AddEvent("admin_menu_error", function(error_message)
     Chat.Print("Admin Menu Error: " .. error_message)
 end)
 
--- Command registration
-Cmd.Add("admin", function()
-    -- First check with server for permissions
-    print("admin")
-    Net.Send("admin_menu_request_open", Players.Local())
-end)
-
 -- Render event
 Event.Add("Render", function()
     if open then
@@ -86,7 +74,7 @@ function onRender()
     local render_size = Render.GetSize()
     local window_size = vec2(
         math.min(1000, math.max(800, render_size.x * 0.6)),
-        math.min(700, math.max(500, render_size.y * 0.7))
+        math.min(800, math.max(500, render_size.y * 0.7))
     )
     
     UI.SetNextWindowSize(window_size, 0)
@@ -113,11 +101,6 @@ function onRender()
         
         UI.End()
     end
-    
-    -- Render confirmation dialog if needed
-    if show_confirmation then
-        renderConfirmationDialog()
-    end
 end
 
 function renderResourcesTab()
@@ -132,16 +115,15 @@ function renderResourcesTab()
     UI.Spacing()
     
     -- Resource list
-    local table_height = UI.GetContentRegionAvail().y - 30
+    local table_height = UI.GetContentRegionAvail().y - 50
     if UI.BeginChild("ResourceListChild", vec2(0, table_height), true) then
         local table_flags = UI.TableFlags_ScrollY | UI.TableFlags_RowBg | UI.TableFlags_BordersOuter
-        if UI.BeginTable("ResourceTable", 4, table_flags) then
+        if UI.BeginTable("ResourceTable", 3, table_flags) then
             -- Table headers
             UI.TableSetupScrollFreeze(0, 1)
             UI.TableSetupColumn("Resource Name", UI.TableColumnFlags_WidthStretch, 0)
             UI.TableSetupColumn("Status", UI.TableColumnFlags_WidthFixed, 80)
-            UI.TableSetupColumn("Actions", UI.TableColumnFlags_WidthFixed, 200)
-            UI.TableSetupColumn("Info", UI.TableColumnFlags_WidthFixed, 60)
+            UI.TableSetupColumn("Actions", UI.TableColumnFlags_WidthFixed, 300)
             UI.TableHeadersRow()
             
             -- Resource rows
@@ -161,15 +143,15 @@ function renderResourcesTab()
                 
                 -- Action buttons
                 UI.TableNextColumn()
-                local button_width = 60
-                local spacing = 5
+                local button_width = 80
+                local spacing = 10
                 
                 -- Start button (disabled if already running)
                 if running then
                     UI.BeginDisabled()
                 end
                 if UI.Button("Start##" .. i, vec2(button_width, 0)) then
-                    showConfirmation("start", tostring(resource.name))
+                    performResourceAction(tostring(resource.name), "start")
                 end
                 if running then
                     UI.EndDisabled()
@@ -182,7 +164,7 @@ function renderResourcesTab()
                     UI.BeginDisabled()
                 end
                 if UI.Button("Stop##" .. i, vec2(button_width, 0)) then
-                    showConfirmation("stop", tostring(resource.name))
+                    performResourceAction(tostring(resource.name), "stop")
                 end
                 if not running then
                     UI.EndDisabled()
@@ -192,13 +174,7 @@ function renderResourcesTab()
                 
                 -- Restart button
                 if UI.Button("Restart##" .. i, vec2(button_width, 0)) then
-                    showConfirmation("restart", tostring(resource.name))
-                end
-                
-                -- Info column
-                UI.TableNextColumn()
-                if UI.Button("?##" .. i, vec2(25, 0)) then
-                    Chat.Print("Resource: " .. tostring(resource.name) .. " | Status: " .. tostring(statusText))
+                    performResourceAction(tostring(resource.name), "restart")
                 end
             end
             
@@ -210,7 +186,7 @@ function renderResourcesTab()
     -- Footer info
     UI.Separator()
     UI.Text("Total Resources: " .. #resources)
-    UI.SameLine()
+    UI.SameLine(0.0, 20.0)
     local running_count = 0
     for _, resource in ipairs(resources) do
         if resource.status == ResourceStatus.Running then running_count = running_count + 1 end
@@ -218,49 +194,8 @@ function renderResourcesTab()
     UI.Text("Running: " .. running_count)
 end
 
-function showConfirmation(action, resource_name)
-    show_confirmation = true
-    confirmation_action = action
-    confirmation_resource = resource_name
-end
-
-function renderConfirmationDialog()
-    local render_size = Render.GetSize()
-    local dialog_size = vec2(400, 150)
-    
-    UI.SetNextWindowSize(dialog_size, 0)
-    UI.SetNextWindowPos(vec2(render_size.x * 0.5 - dialog_size.x / 2, render_size.y * 0.5 - dialog_size.y / 2), 0)
-    
-    local dialog_flags = UI.WindowFlags_NoCollapse | UI.WindowFlags_NoResize | UI.WindowFlags_Modal
-    
-    if UI.Begin("Confirm Action", dialog_flags) then
-        UI.Text("Are you sure you want to " .. confirmation_action .. " the resource:")
-        UI.Text("'" .. confirmation_resource .. "'?")
-        UI.Spacing()
-        UI.Separator()
-        UI.Spacing()
-        
-        local button_width = 80
-        if UI.Button("Yes", vec2(button_width, 0)) then
-            performResourceAction(confirmation_resource, confirmation_action)
-            show_confirmation = false
-        end
-        
-        UI.SameLine()
-        
-        if UI.Button("No", vec2(button_width, 0)) then
-            show_confirmation = false
-        end
-        
-        UI.End()
-    end
-end
-
--- Handle ESC key to close menu
-Event.Add("KeyUp", function(key)
-    if key == Key.Escape and open then
-        toggleOpen()
+Event.Add("KeyDown", function(key)
+    if key == Key.F1 then
+        Net.Send("admin_menu_request_open")
     end
 end)
-
-print("[AdminMenu] Client-side loaded successfully")

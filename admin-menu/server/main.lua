@@ -24,25 +24,28 @@ local function getResourceList()
 end
 
 -- Network event: Client requests resource list
-Net.AddEvent("admin_menu_request", function(player)
-    if not hasAdminPermission(player) then
-        Net.SendToTarget(player, "admin_menu_error", "Access denied: Insufficient permissions")
+Net.AddEvent("admin_menu_request", function()
+    local sender = Net.Sender()
+
+    if not hasAdminPermission(sender) then
+        Net.SendToTarget(sender, "admin_menu_error", "Access denied: Insufficient permissions")
         return
     end
     
-    local resources = getResourceList()
-    Net.SendToTarget(player, "admin_menu_response", resources)
+    Net.SendToTarget(sender, "admin_menu_response", getResourceList())
 end)
 
 -- Network event: Client requests resource action (start/stop/restart)
-Net.AddEvent("resource_action", function(player, resource_name, action)
-    if not hasAdminPermission(player) then
-        Net.SendToTarget(player, "resource_action_result", false, "Access denied: Insufficient permissions")
+Net.AddEvent("resource_action", function(resource_name, action)
+    local sender = Net.Sender()
+
+    if not hasAdminPermission(sender) then
+        Net.SendToTarget(sender, "resource_action_result", false, "Access denied: Insufficient permissions")
         return
     end
     
     if not resource_name or resource_name == "" then
-        Net.SendToTarget(player, "resource_action_result", false, "Invalid resource name")
+        Net.SendToTarget(sender, "resource_action_result", false, "Invalid resource name")
         return
     end
     
@@ -59,29 +62,28 @@ Net.AddEvent("resource_action", function(player, resource_name, action)
         success = Resources.Restart(resource_name)
         message = success and ("Resource '" .. resource_name .. "' restarted successfully") or ("Failed to restart resource '" .. resource_name .. "'")
     else
-        Net.SendToTarget(player, "resource_action_result", false, "Invalid action: " .. tostring(action))
+        Net.SendToTarget(sender, "resource_action_result", false, "Invalid action: " .. tostring(action))
         return
     end
     
     -- Log admin action
-    print("[AdminMenu] " .. player:GetNick() .. " (" .. player:GetNetId() .. ") performed action '" .. action .. "' on resource '" .. resource_name .. "' - " .. (success and "SUCCESS" or "FAILED"))
+    print("[AdminMenu] " .. sender:GetNick() .. " (" .. sender:GetNetId() .. ") performed action '" .. action .. "' on resource '" .. resource_name .. "' - " .. (success and "SUCCESS" or "FAILED"))
     
-    Net.SendToTarget(player, "resource_action_result", success, message)
+    Net.SendToTarget(sender, "resource_action_result", success, message)
 end)
 
-Net.AddEvent("admin_menu_request_open", function(player)
-    print("admin_menu_request_open")
-    print(player)
-    
-    if not hasAdminPermission(player) then
+Net.AddEvent("admin_menu_request_open", function()
+    local sender = Net.Sender()
+
+    if not hasAdminPermission(sender) then
         print("Access denied: Insufficient permissions")
-        Net.SendToTarget(player, "admin_menu_error", "Access denied: Insufficient permissions")
+        Net.SendToTarget(sender, "admin_menu_error", "Access denied: Insufficient permissions")
         return
     end
     
     local resources = getResourceList()
-    Net.SendToTarget(player, "admin_permission_granted", true)
-    Net.SendToTarget(player, "admin_menu_response", resources)
+    Net.SendToTarget(sender, "admin_permission_granted", true)
+    Net.SendToTarget(sender, "admin_menu_response", resources)
 end)
 
 print("[AdminMenu] Server-side loaded successfully")
