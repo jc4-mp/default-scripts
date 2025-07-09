@@ -1,7 +1,7 @@
 local spawnlist = require("spawn_list")
 
 local open = false
-local selection = { category = 0, item_index = 0 }
+local selection = { category = 0, item_index = -1 }
 
 function toggleOpen()
     open = not open
@@ -67,7 +67,7 @@ function onRender()
 
         local button_width = UI.GetContentRegionAvail().x
         local button_label = spawnlist.categories[active_tab].button_name
-        if UI.Button(button_label, vec2(button_width, 0)) then
+        if UI.Button(button_label, vec2(button_width, 0)) and selection.item_index ~= -1 then
             local category = spawnlist.categories[selection.category]
             local item = category.items[selection.item_index]
             if item then
