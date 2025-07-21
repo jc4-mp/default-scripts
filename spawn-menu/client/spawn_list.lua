@@ -850,6 +850,74 @@ return {
             }
         },
         {
+            name = "Mounted Guns",
+            type = "mounted_gun",
+            button_name = "Spawn",
+            items =
+            {
+                {
+                    name = "Cannon",
+                    id = "wpn_202_cannon"
+                },
+                {
+                    name = "Cannon (Rebel)",
+                    id = "wpn_202_cannon_rebel"
+                },
+                {
+                    name = "Cannon (AOC)",
+                    id = "wpn_202_cannon_aoc"
+                },
+                {
+                    name = "Anti-Air Gun",
+                    id = "wpn_203_aa_gun"
+                },
+                {
+                    name = "Anti-Air Gun (Rebel)",
+                    id = "wpn_203_aa_gun_rebel"
+                },
+                {
+                    name = "Anti-Air Gun (AOC)",
+                    id = "wpn_203_aa_gun_aoc"
+                },
+                {
+                    name = "Mounted Mortar",
+                    id = "wpn_204_mortar_mounted"
+                },
+                {
+                    name = "Mounted Mortar (Rebel)",
+                    id = "wpn_204_mortar_mounted_rebel"
+                },
+                {
+                    name = "Mounted Mortar (AOC)",
+                    id = "wpn_204_mortar_mounted_aoc"
+                },
+                {
+                    name = "Minigun",
+                    id = "wpn_201_minigun"
+                },
+                {
+                    name = "Minigun (AOC)",
+                    id = "wpn_201_minigun_aoc"
+                },
+                {
+                    name = "Mounted Minigun",
+                    id = "wpn_201_minigun_mount"
+                },
+                {
+                    name = "Mounted Minigun (Rebel)",
+                    id = "wpn_201_minigun_mount_rebel"
+                },
+                {
+                    name = "Mounted Minigun (Military)",
+                    id = "wpn_201_minigun_mount_military"
+                },
+                {
+                    name = "Illapa Defence Weapon",
+                    id = "illapa_defence_weapon"
+                }
+            }
+        },
+        {
             name = "DLC Vehicles",
             type = "vehicle",
             button_name = "Spawn",
@@ -1185,6 +1253,67 @@ return {
             type = "weapon",
             button_name = "Spawn",
             items = {
+                
+                {
+                    name = "Cannon",
+                    id = "wpn_202_cannon"
+                },
+                {
+                    name = "Cannon (Rebel)",
+                    id = "wpn_202_cannon_rebel"
+                },
+                {
+                    name = "Cannon (AOC)",
+                    id = "wpn_202_cannon_aoc"
+                },
+                {
+                    name = "Anti-Air Gun",
+                    id = "wpn_203_aa_gun"
+                },
+                {
+                    name = "Anti-Air Gun (Rebel)",
+                    id = "wpn_203_aa_gun_rebel"
+                },
+                {
+                    name = "Anti-Air Gun (AOC)",
+                    id = "wpn_203_aa_gun_aoc"
+                },
+                {
+                    name = "Mounted Mortar",
+                    id = "wpn_204_mortar_mounted"
+                },
+                {
+                    name = "Mounted Mortar (Rebel)",
+                    id = "wpn_204_mortar_mounted_rebel"
+                },
+                {
+                    name = "Mounted Mortar (AOC)",
+                    id = "wpn_204_mortar_mounted_aoc"
+                },
+                {
+                    name = "Minigun",
+                    id = "wpn_201_minigun"
+                },
+                {
+                    name = "Minigun (AOC)",
+                    id = "wpn_201_minigun_aoc"
+                },
+                {
+                    name = "Mounted Minigun",
+                    id = "wpn_201_minigun_mount"
+                },
+                {
+                    name = "Mounted Minigun (Rebel)",
+                    id = "wpn_201_minigun_mount_rebel"
+                },
+                {
+                    name = "Mounted Minigun (Military)",
+                    id = "wpn_201_minigun_mount_military"
+                },
+                {
+                    name = "Illapa Defence Weapon",
+                    id = "illapa_defence_weapon"
+                },
                 {
                     separator = true,
                     name = "Base Game Weapons"
@@ -1278,26 +1407,6 @@ return {
                     id = "w206_mounted_capstone_m2hm"
                 },
                 {
-                    name = "Minigun",
-                    id = "wpn_201_minigun"
-                },
-                {
-                    name = "Minigun (AOC)",
-                    id = "wpn_201_minigun_aoc"
-                },
-                {
-                    name = "Mounted Minigun",
-                    id = "wpn_201_minigun_mount"
-                },
-                {
-                    name = "Mounted Minigun (Rebel)",
-                    id = "wpn_201_minigun_mount_rebel"
-                },
-                {
-                    name = "Mounted Minigun (Military)",
-                    id = "wpn_201_minigun_mount_military"
-                },
-                {
                     name = "Grenade",
                     id = "w301_grenade"
                 },
@@ -1312,46 +1421,6 @@ return {
                 {
                     name = "Death-Dropped Grenade",
                     id = "w304_death_dropped_grenade"
-                },
-                {
-                    name = "Cannon",
-                    id = "wpn_202_cannon"
-                },
-                {
-                    name = "Cannon (Rebel)",
-                    id = "wpn_202_cannon_rebel"
-                },
-                {
-                    name = "Cannon (AOC)",
-                    id = "wpn_202_cannon_aoc"
-                },
-                {
-                    name = "Anti-Air Gun",
-                    id = "wpn_203_aa_gun"
-                },
-                {
-                    name = "Anti-Air Gun (Rebel)",
-                    id = "wpn_203_aa_gun_rebel"
-                },
-                {
-                    name = "Anti-Air Gun (AOC)",
-                    id = "wpn_203_aa_gun_aoc"
-                },
-                {
-                    name = "Mounted Mortar",
-                    id = "wpn_204_mortar_mounted"
-                },
-                {
-                    name = "Mounted Mortar (Rebel)",
-                    id = "wpn_204_mortar_mounted_rebel"
-                },
-                {
-                    name = "Mounted Mortar (AOC)",
-                    id = "wpn_204_mortar_mounted_aoc"
-                },
-                {
-                    name = "Illapa Defence Weapon",
-                    id = "illapa_defence_weapon"
                 },
                 {
                     name = "Cow Gun",

@@ -75,6 +75,10 @@ function onRender()
                     local player = Players.Local()
                     local spawn_pos = player:GetGamePlayer():GetAimPosition()
                     Net.Send("spawn", item.id, spawn_pos)
+                elseif category.type == "mounted_gun" then
+                    local player = Players.Local()
+                    local spawn_pos = player:GetGamePlayer():GetAimPosition()
+                    Net.Send("spawnMg", item.id, spawn_pos)
                 elseif category.type == "skin" then
                     Local.SetSkin(item.id)
                 elseif category.type == "weapon" then
