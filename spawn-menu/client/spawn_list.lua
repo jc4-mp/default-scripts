@@ -856,6 +856,10 @@ return {
             items =
             {
                 {
+                    name = "Agency AA Gun",
+                    id = "wpn_205_agency_aa_gun"
+                },
+                {
                     name = "Cannon",
                     id = "wpn_202_cannon"
                 },
@@ -1253,67 +1257,6 @@ return {
             type = "weapon",
             button_name = "Spawn",
             items = {
-                
-                {
-                    name = "Cannon",
-                    id = "wpn_202_cannon"
-                },
-                {
-                    name = "Cannon (Rebel)",
-                    id = "wpn_202_cannon_rebel"
-                },
-                {
-                    name = "Cannon (AOC)",
-                    id = "wpn_202_cannon_aoc"
-                },
-                {
-                    name = "Anti-Air Gun",
-                    id = "wpn_203_aa_gun"
-                },
-                {
-                    name = "Anti-Air Gun (Rebel)",
-                    id = "wpn_203_aa_gun_rebel"
-                },
-                {
-                    name = "Anti-Air Gun (AOC)",
-                    id = "wpn_203_aa_gun_aoc"
-                },
-                {
-                    name = "Mounted Mortar",
-                    id = "wpn_204_mortar_mounted"
-                },
-                {
-                    name = "Mounted Mortar (Rebel)",
-                    id = "wpn_204_mortar_mounted_rebel"
-                },
-                {
-                    name = "Mounted Mortar (AOC)",
-                    id = "wpn_204_mortar_mounted_aoc"
-                },
-                {
-                    name = "Minigun",
-                    id = "wpn_201_minigun"
-                },
-                {
-                    name = "Minigun (AOC)",
-                    id = "wpn_201_minigun_aoc"
-                },
-                {
-                    name = "Mounted Minigun",
-                    id = "wpn_201_minigun_mount"
-                },
-                {
-                    name = "Mounted Minigun (Rebel)",
-                    id = "wpn_201_minigun_mount_rebel"
-                },
-                {
-                    name = "Mounted Minigun (Military)",
-                    id = "wpn_201_minigun_mount_military"
-                },
-                {
-                    name = "Illapa Defence Weapon",
-                    id = "illapa_defence_weapon"
-                },
                 {
                     separator = true,
                     name = "Base Game Weapons"
@@ -1553,10 +1496,6 @@ return {
                 {
                     name = "Railgun (Miller)",
                     id = "wpn_100_railgun_miller"
-                },
-                {
-                    name = "Agency AA Gun",
-                    id = "wpn_205_agency_aa_gun"
                 },
                 {
                     name = "Agency Handcannon",
