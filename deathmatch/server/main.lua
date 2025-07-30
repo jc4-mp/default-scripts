@@ -22,9 +22,8 @@ local weapons =
 function respawnPlayer(player, time)
 	Timer.Set(function(player)
         player:Respawn(spawnpoints[math.random(1, #spawnpoints)])
-        player:GiveWeapon(weapons[math.random(1, #weapons)], 240, true, WeaponSlot.Primary)
-
-        print(weapons[math.random(1, #weapons)])
+        player:GiveWeapon(weapons[math.random(1, #weapons)], 240, WeaponSlot.Primary)
+        player:GiveWeapon(weapons[math.random(1, #weapons)], 240, WeaponSlot.Secondary)
     end, time, 1, player)
 end
 
