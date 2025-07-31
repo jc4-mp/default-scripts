@@ -193,7 +193,7 @@ return {
                     name = "Camión Truck",
                     id = "v004_car_articulatedtruck_commercial_01"
                 },
-                {
+                --[[{
                     name = "Camión Truck With Cargo Trailer",
                     id = "v004_car_articulatedtruck_commercial_cargo_trailer"
                 },
@@ -216,7 +216,7 @@ return {
                 {
                     name = "Camión Truck With SAM Trailer",
                     id = "v004_car_articulatedtruck_commercial_smallmobileweapon_trailer"
-                },
+                },]]
                 {
                     name = "Forzudo Armored Van",
                     id = "v009_car_armoredtruck_commercial_01"
@@ -225,14 +225,14 @@ return {
                     name = "Ranchero Truck",
                     id = "v034_car_oldtruck_commercial_01"
                 },
-                {
+                --[[{
                     name = "Ranchero Truck With Explosive Barrels",
                     id = "v034_car_oldtruck_commercial_cargo_barrel"
                 },
                 {
                     name = "Ranchero Truck With Random Cargo",
                     id = "v034_car_oldtruck_commercial_cargo_random"
-                },
+                },]]
                 {
                     name = "Prisa Calzada Van Truck",
                     id = "v035_car_modernvan_civic_ambulance_01"
@@ -285,18 +285,18 @@ return {
                     name = "Flatbed Trailer with Radar (Folded)",
                     id = "v902_trailer_lowloader_mobile_radar_folded"
                 },
-                {
+                --[[{
                     name = "Flatbed Trailer with Radar (Folded, AI)",
                     id = "v902_trailer_lowloader_mobile_radar_folded_sargento_aiproxy_enabled"
-                },
+                },]]
                 {
                     name = "Flatbed Trailer with Radar (Extended)", 
                     id = "v902_trailer_lowloader_mobile_radar_upright"
                 },
-                {
+                --[[{
                     name = "Flatbed Trailer with Radar (Extended, AI)",
                     id = "v902_trailer_lowloader_mobile_radar_upright_sargento_aiproxy_enabled"
-                },
+                },]]
                 {
                     name = "Cargo Trailer",
                     id = "v903_trailer_cargo_commercial"
@@ -377,10 +377,10 @@ return {
                     name = "Ranchero Truck With Weapon Shipment Box",
                     id = "v034_car_oldtruck_commercial_cargo_sargento_intro"
                 },
-                {
+                --[[{
                     name = "Ranchero Truck With Explosive Barrels (Mission)",
                     id = "v034_car_oldtruck_commercial_cargo_barrel_mission_special"
-                },
+                },]]
                 {
                     separator = true,
                     name = "Rebel Vehicles"
@@ -546,7 +546,7 @@ return {
                 },
                 {
                     name = "Barco Roro Ferry",
-                    id = "v109_boat_ferry_cmmercial"
+                    id = "v109_boat_ferry_commercial"
                 },
                 {
                     separator = true,
@@ -588,10 +588,10 @@ return {
                     name = "Fishing Boat",
                     id = "v108_boat_largeoldfishing_civilian_01_garland_intro"
                 },
-                {
+                --[[{
                     name = "Barco Roro Ferry With Explosive Barrels",
                     id = "v109_boat_ferry_commercial_garlandintro"
-                },
+                },]]
                 {
                     separator = true,
                     name = "Rebel Vehicles"
@@ -695,10 +695,10 @@ return {
                     name = "Prospero Sky Crane",
                     id = "v200_helicopter_heavylift_military"
                 },
-                {
+                --[[{
                     name = "Prospero Sky Crane With Sphere Tank",
                     id = "v200_helicopter_heavylift_military_chaos_sphere_tank"
-                },
+                },]]
                 {
                     name = "Spectre Attack Heli",
                     id = "v201_helicopter_mediumattack_military_01"
@@ -715,6 +715,10 @@ return {
                     name = "Bloodhound Siege Heli",
                     id = "v204_helicopter_heavyassault_military_01"
                 },
+                --[[{
+                    separator = true,
+                    name = "Drones"
+                },
                 {
                     name = "PR83 Attack Drone",
                     id = "v250_helicopter_mediumattackdrone_military"
@@ -730,7 +734,7 @@ return {
                 {
                     name = "Guard Drone",
                     id = "v254_helicopter_guarddrone_military"
-                },
+                },]]
                 {
                     name = "Fellhawk Jet Fighter",
                     id = "v400_plane_fighterjet_military_01"
@@ -755,7 +759,7 @@ return {
                     name = "Emvasion Airship",
                     id = "v700_balloon_dirigible_military_01"
                 },
-                {
+                --[[{
                     separator = true,
                     name = "Mission Vehicles"
                 },
@@ -782,7 +786,7 @@ return {
                 {
                     name = "Emvasion Airship",
                     id = "v700_balloon_dirigible_node_science_01"
-                },
+                },]]
                 {
                     separator = true,
                     name = "Rebel Vehicles"
@@ -807,7 +811,7 @@ return {
                     name = "Bloodhound Siege Heli",
                     id = "v204_helicopter_heavyassault_rebel_01"
                 },
-                {
+                --[[{
                     name = "PR83 Attack Drone",
                     id = "v250_helicopter_mediumattackdrone_rebel"
                 },
@@ -826,7 +830,7 @@ return {
                 {
                     name = "Guard Drone",
                     id = "v254_helicopter_guarddrone_rebel"
-                },
+                },]]
                 {
                     name = "Fellhawk Jet Fighter",
                     id = "v400_plane_fighterjet_rebel_01"
@@ -843,10 +847,10 @@ return {
                     name = "PA Microfighter",
                     id = "v403_plane_microjet_rebel"
                 },
-                {
+                --[[{
                     name = "Decoy Drone (Preorder)",
                     id = "v253_helicopter_decoydrone_preorder"
-                },
+                },]]
             }
         },
         {
@@ -863,10 +867,10 @@ return {
                     name = "Cannon",
                     id = "wpn_202_cannon"
                 },
-                {
+                --[[{
                     name = "Cannon (Rebel)",
                     id = "wpn_202_cannon_rebel"
-                },
+                },]]
                 {
                     name = "Cannon (AOC)",
                     id = "wpn_202_cannon_aoc"
@@ -875,10 +879,10 @@ return {
                     name = "Anti-Air Gun",
                     id = "wpn_203_aa_gun"
                 },
-                {
+                --[[{
                     name = "Anti-Air Gun (Rebel)",
                     id = "wpn_203_aa_gun_rebel"
-                },
+                },]]
                 {
                     name = "Anti-Air Gun (AOC)",
                     id = "wpn_203_aa_gun_aoc"
@@ -887,10 +891,10 @@ return {
                     name = "Mounted Mortar",
                     id = "wpn_204_mortar_mounted"
                 },
-                {
+                --[[{
                     name = "Mounted Mortar (Rebel)",
                     id = "wpn_204_mortar_mounted_rebel"
-                },
+                },]]
                 {
                     name = "Mounted Mortar (AOC)",
                     id = "wpn_204_mortar_mounted_aoc"
@@ -903,7 +907,7 @@ return {
                     name = "Minigun (AOC)",
                     id = "wpn_201_minigun_aoc"
                 },
-                {
+                --[[{
                     name = "Mounted Minigun",
                     id = "wpn_201_minigun_mount"
                 },
@@ -918,7 +922,7 @@ return {
                 {
                     name = "Illapa Defence Weapon",
                     id = "illapa_defence_weapon"
-                }
+                }]]
             }
         },
         {
@@ -930,14 +934,14 @@ return {
                     separator = true,
                     name = "Agency DLC"
                 },
-                {
+                --[[{
                     name = "Agency Drone",
                     id = "v270_helicopter_agencydrone_agency"
                 },
                 {
                     name = "Agency Drone (Rebel)",
                     id = "v270_helicopter_agencydrone_rebel"
-                },
+                },]]
                 {
                     name = "Agency Spy Helicopter",
                     id = "v221_helicopter_agencyspy_agency"
@@ -1194,10 +1198,10 @@ return {
                     name = "Flying Car (Land)",
                     id = "v086_car_flyingcar_garage"
                 },
-                {
+               --[[
                     name = "Flying Car (Air)",
                     id = "v425_plane_flyingcar_garage"
-                },
+                },]]
                 {
                     separator = true,
                     name = "Toy Vehicle Pack"
@@ -1345,7 +1349,7 @@ return {
                     name = "Railgun",
                     id = "wpn_100_railgun"
                 },
-                {
+                --[[{
                     name = "Mounted Capstone M2HM",
                     id = "w206_mounted_capstone_m2hm"
                 },
@@ -1372,8 +1376,8 @@ return {
                 {
                     name = "The Pan",
                     id = "the_pan"
-                },
-                {
+                },]]
+                --[[{
                     separator = true,
                     name = "Digital Deluxe DLC"
                 },
@@ -1384,7 +1388,7 @@ return {
                 {
                     name = "Dragon's Breath Wingsuit",
                     id = "wpn_991_premium_wingsuit_dragon_breath"
-                },
+                },]]
                 {
                     separator = true,
                     name = "Deathstalker DLC"
@@ -1401,14 +1405,14 @@ return {
                     name = "Golden Shotgun",
                     id = "wpn_902_golden_shotgun"
                 },
-                {
+                --[[{
                     separator = true,
                     name = "Renegade DLC"
                 },
                 {
                     name = "Renegade Assault Rifle",
                     id = "wpn_903_renegade_assault_rifle"
-                },
+                },]]
                 {
                     separator = true,
                     name = "The Dragon DLC"
@@ -1433,7 +1437,7 @@ return {
                     name = "Crossbow",
                     id = "wpn_102_crossbow"
                 },
-                {
+                --[[{
                     name = "Seed Gun",
                     id = "wpn_808_combat_rifle_seed_gun"
                 },
@@ -1488,7 +1492,7 @@ return {
                 {
                     name = "Substrate Mortar (Outro)",
                     id = "dlc2_substrate_weapon_mortar_01_outro"
-                },
+                },]]
                 {
                     separator = true,
                     name = "Danger Rising DLC"
@@ -1505,10 +1509,10 @@ return {
                     name = "Agency SMG",
                     id = "wpn_460_agency_smg"
                 },
-                {
+                --[[{
                     name = "Agency Sniper",
                     id = "wpn_461_agency_sniper"
-                },
+                },]]
                 {
                     name = "Magnesis",
                     id = "wpn_463_magnesis"
