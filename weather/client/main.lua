@@ -2,7 +2,7 @@ Event.Add("KeyDown", function(key)
     if Chat.IsTyping() then return end
 
     if key == Key.M then
-		Net.Send("spawnTornado", Players.Local():GetGamePlayer():GetAimPosition())
+		Net.Send("spawnTornado", Players.Local():GI():GetAimPosition())
     end
 	
     if key == Key.K then
@@ -10,6 +10,6 @@ Event.Add("KeyDown", function(key)
     end
 	
     if key == Key.N then
-		Net.Send("setTornadoPos", Players.Local():GetGamePlayer():GetAimPosition())
+		Net.Send("setTornadoPos", Players.Local():GI():GetAimPosition())
     end
 end)

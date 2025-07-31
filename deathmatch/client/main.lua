@@ -27,7 +27,6 @@ local suicideMsgs =
     "%s eliminated themselves. Efficiency?",
     "%s was outplayed by physics.",
     "%s has achieved peak embarrassment.",
-    "%s vs %s. %s lost.",
     "%s discovered a new way to fail.",
     "%s forgot how explosives work.",
     "%s skipped the tutorial... and life.",
