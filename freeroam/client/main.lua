@@ -1,4 +1,4 @@
-Event.Add("ResourceStart", function(name)
+Event.Add("OnResourceStart", function(name)
 	if Resource.Name == name then
 		Local.UnlockAbility(Ability.GrapplingHook)
 		Local.UnlockAbility(Ability.Parachute)
@@ -11,7 +11,7 @@ Event.Add("ResourceStart", function(name)
 	end
 end)
 
-Event.Add("ResourceStop", function(name)
+Event.Add("OnResourceStop", function(name)
 	if Resource.Name == name then
 		Local.LockAbility(Ability.GrapplingHook)
 		Local.LockAbility(Ability.Parachute)

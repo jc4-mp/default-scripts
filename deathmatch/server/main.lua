@@ -31,7 +31,7 @@ Event.Add("PlayerJoin", function(client)
     respawnPlayer(client:GetNetPlayer(), 2500)
 end)
 
-Event.Add("PlayerKilled", function(player, damager, loss, hitBone, weapon, position)
+Event.Add("OnPlayerKilled", function(player, damager, loss, hitBone, weapon, position)
     respawnPlayer(player, 2500)
 end)
 

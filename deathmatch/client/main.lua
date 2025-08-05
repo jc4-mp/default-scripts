@@ -34,7 +34,7 @@ local suicideMsgs =
     "%s self-deleted. Impressive.",
 }
 
-Event.Add("PlayerKilled", function(player, damager, loss, hitBone, weapon, position)
+Event.Add("OnPlayerKilled", function(player, damager, loss, hitBone, weapon, position)
 	local playerDamager = damager and damager:AsPlayer() or nil
 
     if playerDamager and player ~= playerDamager then
@@ -48,7 +48,7 @@ Cmd.Add("p", function()
 	print(Players.Local():GetNetPlayer():GetPosition() + vec3(0, 1, 0))
 end)
 
-Event.Add("ResourceStart", function(name)
+Event.Add("OnResourceStart", function(name)
 	if Resource.Name == name then
 		Local.UnlockAbility(Ability.Parachute)
 		Local.UnlockAbility(Ability.Wingsuit)
@@ -57,7 +57,7 @@ Event.Add("ResourceStart", function(name)
 	end
 end)
 
-Event.Add("ResourceStop", function(name)
+Event.Add("OnResourceStop", function(name)
 	if Resource.Name == name then
 		Local.LockAbility(Ability.Parachute)
 		Local.LockAbility(Ability.Wingsuit)

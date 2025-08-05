@@ -3,7 +3,7 @@ local newWeaponsIds =
 	838
 }
 
-Event.Add("ResourceStart", function(name)
+Event.Add("OnResourceStart", function(name)
 	if name == Resource.Name then
 		for k, v in pairs(newWeaponsIds) do
 			Weapons.RegisterNew(v)
@@ -11,7 +11,7 @@ Event.Add("ResourceStart", function(name)
 	end
 end)
 
-Event.Add("ResourceStop", function(name)
+Event.Add("OnResourceStop", function(name)
 	if name == Resource.Name then
 		for k, v in pairs(newWeaponsIds) do
 			Weapons.UnregisterNew(v)
