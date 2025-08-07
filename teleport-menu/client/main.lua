@@ -26,7 +26,7 @@ end)
 Event.Add("MouseDown", function(key)
     if key == Key.MouseLeft and open and hovered_location_index_this_frame then
         local selected_location = locations[hovered_location_index_this_frame]
-        Local.Teleport(selected_location.position)
+        Net.Send("requestTeleport", selected_location.position)
         toggleOpen()
     end
 end)

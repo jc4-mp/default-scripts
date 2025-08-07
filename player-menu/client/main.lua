@@ -81,12 +81,8 @@ function onRender()
                             if UI.Button("Warp##" .. tostring(net_id), vec2(avail.x, 0)) then
                                 local target_pos = net_player:GetPosition()
                                 if target_pos then
-                                    if Local and Local.Teleport then
-                                        Local.Teleport(target_pos)
-                                        toggleOpen() -- Close menu after warping
-                                    else
-                                        print("[PlayerMenu] Error: Local.Teleport function not found.")
-                                    end
+                                    Net.Send("requestTeleport", target_pos)
+                                    toggleOpen() -- Close menu after warping
                                 else
                                     print("[PlayerMenu] Warning: Could not get position for player " .. (nick or tostring(net_id)))
                                 end

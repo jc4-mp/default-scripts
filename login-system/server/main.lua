@@ -34,8 +34,8 @@ function LoadPlayer(client)
 			local position = vec3(entry.x, entry.y, entry.z)
 
 			print("Saved position:", position)
-			
-			Net.SendToTarget(client, "loadPlayerInfo", position)
+
+			client:GetNetPlayer():Teleport(position)
 		end
 			
 		print("Player " .. steamId .. " logged in")
