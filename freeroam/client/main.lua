@@ -8,6 +8,9 @@ Event.Add("OnResourceStart", function(name)
 		Local.UnlockAbility(Ability.Tether)
 		Local.UnlockAbility(Ability.RetractTether)
 		Local.UnlockAbility(Ability.ParachuteSlingshot)
+
+		Players.SetTagsEnabled(true)
+		World.SetTime(10)
 	end
 end)
 
@@ -22,4 +25,11 @@ Event.Add("OnResourceStop", function(name)
 		Local.LockAbility(Ability.RetractTether)
 		Local.LockAbility(Ability.ParachuteSlingshot)
 	end
+end)
+
+Cmd.Add("lmao", function()
+	local player = Players.Local()
+	local spawn_pos = player:GI():GetAimPosition()
+
+    Net.Send("lmao1", spawn_pos)
 end)
