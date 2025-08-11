@@ -1,13 +1,10 @@
 Net.AddEvent("spawn", function(id, position)
     local veh = World.SpawnVehicle(id, position)
 
-    --[[Timer.Set(function(vehicle)
-        --vehicle:SetDirt(math.random(0.0, 1.0))
-        vehicle:SetPrimaryColor(math.random(0.0, 1.0), math.random(0.0, 1.0), math.random(0.0, 1.0))
-        vehicle:SetSecondaryColor(math.random(0.0, 1.0), math.random(0.0, 1.0), math.random(0.0, 1.0))
-        vehicle:SetTertiaryColor(math.random(0.0, 1.0), math.random(0.0, 1.0), math.random(0.0, 1.0))
-        vehicle:SetMetallic(math.random(0.0, 100.0) / 100.0)
-    end, 500, 10000, veh)]]
+    veh:SetPrimaryColor(math.random(0.0, 1.0), math.random(0.0, 1.0), math.random(0.0, 1.0))
+    veh:SetSecondaryColor(math.random(0.0, 1.0), math.random(0.0, 1.0), math.random(0.0, 1.0))
+    veh:SetTertiaryColor(math.random(0.0, 1.0), math.random(0.0, 1.0), math.random(0.0, 1.0))
+    veh:SetMetallic(math.random(0.0, 100.0) / 100.0)
 end)
 
 Net.AddEvent("spawnMg", function(id, position)
