@@ -954,10 +954,10 @@ return {
                     name = "Agency Hovercraft",
                     id = "v851_car_hovercraft_agency"
                 },
-                {
+                --[[{
                     name = "Agency SAM Launcher",
                     id = "v908_trailer_agencysmallmobileweapon_agency"
-                },
+                },]]
                 {
                     name = "Agency Hovercraft (Mission)",
                     id = "v851_car_hovercraft_agency_mission_special_dlc3_outro"
