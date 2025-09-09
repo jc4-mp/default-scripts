@@ -5,6 +5,12 @@ Net.AddEvent("spawn", function(id, position)
     veh:SetSecondaryColor(math.random(0.0, 1.0), math.random(0.0, 1.0), math.random(0.0, 1.0))
     veh:SetTertiaryColor(math.random(0.0, 1.0), math.random(0.0, 1.0), math.random(0.0, 1.0))
     veh:SetMetallic(math.random(0.0, 100.0) / 100.0)
+    --[[veh:SetPartState(VehiclePart.FrontLeft, VehiclePartState.Open)
+    veh:SetPartState(VehiclePart.FrontRight, VehiclePartState.Open)
+    veh:SetPartState(VehiclePart.Trunk, VehiclePartState.Open)
+    veh:SetPartState(VehiclePart.Hood, VehiclePartState.Open)
+    veh:SetPartState(VehiclePart.RearLeft, VehiclePartState.Open)
+    veh:SetPartState(VehiclePart.RearRight, VehiclePartState.Open)]]
 end)
 
 Net.AddEvent("spawnMg", function(id, position)

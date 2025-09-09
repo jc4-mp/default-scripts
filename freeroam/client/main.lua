@@ -33,3 +33,8 @@ Cmd.Add("lmao", function()
 
     Net.Send("lmao1", spawn_pos)
 end)
+
+Event.Add("OnVehiclePartChangedState", function(vehicle, part, state)
+	-- I will check if the driver door is opened here and make the vehicle explode when the door is closed
+	-- and i will add this in a random test so you will not expect it
+end)
