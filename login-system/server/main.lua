@@ -33,7 +33,7 @@ function LoadPlayer(client)
 		if entry.x and entry.y and entry.z then
 			local position = vec3(entry.x, entry.y, entry.z)
 
-			print("Saved position:", position)
+			print("Loaded position:", position)
 
 			client:GetNetPlayer():Teleport(position)
 		end
@@ -55,6 +55,8 @@ function SavePlayer(client)
 		UPDATE accounts
 		SET x = ?, y = ?, z = ?, last_seen = CURRENT_TIMESTAMP
 		WHERE steam_id = ?]], playerPos.x, playerPos.y, playerPos.z, steamId)
+
+	print("saved position:", playerPos)
 	
 	if result.success then
 		print("Player " .. steamId .. " saved")
