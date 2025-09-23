@@ -15,3 +15,11 @@ Net.AddEvent("lmao1", function(position)
         local veh = World.SpawnVehicle("v401_plane_cargotransport_military_01", position + vec3(0, i * 10, 0))
     end
 end)
+
+Event.Add("OnVehicleDamage", function(vehicle, damager, loss, hitbone, weaponHash, hitposition)
+	--Event.Cancel()
+end)
+
+Event.Add("OnPlayerDamage", function(vehicle, damager, loss, hitbone, weaponHash, hitposition)
+	--Event.Cancel()
+end)
