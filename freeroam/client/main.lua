@@ -10,7 +10,7 @@ Event.Add("OnResourceStart", function(name)
 		Local.UnlockAbility(Ability.ParachuteSlingshot)
 
 		Players.SetTagsEnabled(true)
-		World.SetTime(10)
+		World.SetTime(12)
 	end
 end)
 
@@ -24,6 +24,16 @@ Event.Add("OnResourceStop", function(name)
 		Local.LockAbility(Ability.Tether)
 		Local.LockAbility(Ability.RetractTether)
 		Local.LockAbility(Ability.ParachuteSlingshot)
+	end
+end)
+
+Event.Add("KeyDown", function(key)
+	if key == Key.F and not Chat.IsTyping() then
+		local client = Players.Local()
+		local player = client:GI()
+		local character = player:GetCharacter()
+
+		character:GoRagdoll()
 	end
 end)
 
