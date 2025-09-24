@@ -11,19 +11,19 @@ function toggleOpen()
     Input.SetEnabled(not open)
 end
 
-Event.Add("KeyDown", function(key)
+Event.Add("OnKeyDown", function(key)
     if key == open_key and not open and not Chat.IsTyping() then
         toggleOpen()
     end
 end)
 
-Event.Add("KeyUp", function(key)
+Event.Add("OnKeyUp", function(key)
     if key == open_key and open then
         toggleOpen()
     end
 end)
 
-Event.Add("MouseDown", function(key)
+Event.Add("OnMouseDown", function(key)
     if key == Key.MouseLeft and open and hovered_location_index_this_frame then
         local selected_location = locations[hovered_location_index_this_frame]
         Net.Send("requestTeleport", selected_location.position)
@@ -31,7 +31,7 @@ Event.Add("MouseDown", function(key)
     end
 end)
 
-Event.Add("Render", function()
+Event.Add("OnRender", function()
     if open then
         renderMenu()
     end

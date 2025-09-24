@@ -7,7 +7,7 @@ function toggleOpen()
 end
 
 -- Listen for 'P' key press to toggle the menu
-Event.Add("KeyUp", function(key)
+Event.Add("OnKeyUp", function(key)
     if Chat.IsTyping() then return end
 
     if key == Key.P then
@@ -16,7 +16,7 @@ Event.Add("KeyUp", function(key)
 end)
 
 -- Render the menu if it's open
-Event.Add("Render", function()
+Event.Add("OnRender", function()
     if open then
         onRender()
     end

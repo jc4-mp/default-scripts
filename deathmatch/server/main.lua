@@ -27,7 +27,7 @@ function respawnPlayer(player, time)
     end, time, 1, player)
 end
 
-Event.Add("PlayerJoin", function(client)
+Event.Add("OnPlayerJoin", function(client)
     respawnPlayer(client:GetNetPlayer(), 2500)
 end)
 
@@ -35,7 +35,7 @@ Event.Add("OnPlayerKilled", function(player, damager, loss, hitBone, weapon, pos
     respawnPlayer(player, 2500)
 end)
 
-Event.Add("PlayerResourceAction", function(client, name, action)
+Event.Add("OnPlayerResourceAction", function(client, name, action)
     if Resource.Name == name and action == ResourceAction.Start then
         respawnPlayer(client:GetNetPlayer(), 500)
     end

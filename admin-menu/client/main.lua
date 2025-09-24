@@ -58,7 +58,7 @@ Net.AddEvent("admin_menu_error", function(error_message)
 end)
 
 -- Render event
-Event.Add("Render", function()
+Event.Add("OnRender", function()
     if open then
         onRender()
     end
@@ -194,7 +194,7 @@ function renderResourcesTab()
     UI.Text("Running: " .. running_count)
 end
 
-Event.Add("KeyDown", function(key)
+Event.Add("OnKeyDown", function(key)
     if key == Key.F1 then
         Net.Send("admin_menu_request_open")
     end

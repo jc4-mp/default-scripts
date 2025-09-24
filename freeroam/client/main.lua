@@ -27,7 +27,7 @@ Event.Add("OnResourceStop", function(name)
 	end
 end)
 
-Event.Add("KeyDown", function(key)
+Event.Add("OnKeyDown", function(key)
 	if key == Key.F and not Chat.IsTyping() then
 		local client = Players.Local()
 		local player = client:GI()

@@ -9,7 +9,7 @@ function toggleOpen()
     UI.SetCursorVisible(open)
 end
 
-Event.Add("KeyUp", function(key)
+Event.Add("OnKeyUp", function(key)
     if Chat.IsTyping() then return end
 
     if key == Key.V then
@@ -17,7 +17,7 @@ Event.Add("KeyUp", function(key)
     end
 end)
 
-Event.Add("Render", function()
+Event.Add("OnRender", function()
     if open then
         onRender()
     end

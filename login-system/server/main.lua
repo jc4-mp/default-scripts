@@ -65,12 +65,12 @@ function SavePlayer(client)
 	end
 end
 
-Event.Add("PlayerResourceAction", function(client, name, action)
+Event.Add("OnPlayerResourceAction", function(client, name, action)
 	if Resource.Name ~= name or action ~= ResourceAction.Start then return end
 	
 	LoadPlayer(client)
 end)
 
-Event.Add("PlayerQuit", function(client)
+Event.Add("OnPlayerQuit", function(client)
 	SavePlayer(client)
 end)

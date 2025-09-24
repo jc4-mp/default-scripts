@@ -1,4 +1,4 @@
-Event.Add("KeyDown", function(key)
+Event.Add("OnKeyDown", function(key)
     if Chat.IsTyping() then return end
 
     if key == Key.M then
