@@ -29,22 +29,40 @@ end)
 
 Event.Add("OnKeyDown", function(key)
 	if key == Key.F and not Chat.IsTyping() then
-		local client = Players.Local()
-		local player = client:GI()
-		local character = player:GetCharacter()
+		local player = Players.LocalPlayer()
 
-		character:GoRagdoll()
+		player:GoRagdoll()
 	end
 end)
 
 Cmd.Add("lmao", function()
-	local player = Players.Local()
-	local spawn_pos = player:GI():GetAimPosition()
-
-    Net.Send("lmao1", spawn_pos)
+    Net.Send("lmao1", Players.LocalPlayer():GetAimPosition())
 end)
 
 Event.Add("OnVehiclePartChangedState", function(vehicle, part, state)
 	-- I will check if the driver door is opened here and make the vehicle explode when the door is closed
 	-- and i will add this in a random test so you will not expect it
+end)
+
+Event.Add("OnPlayerTeleport", function(player)
+    print("player:", tostring(player) .. " teleported")
+    print("health:", player:GetHealth())
+end)
+
+Event.Add("OnPlayerRagdollStart", function(player)
+end)
+
+Event.Add("OnPlayerRagdollEnd", function(player)
+end)
+
+Event.Add("OnVehicleNitrousUse", function(vehicle)
+end)
+
+Event.Add("OnVehicleTurboJump", function(vehicle)
+end)
+
+Event.Add("OnVehicleCollision", function(vehicle, position, normal, impulse)
+	if impulse > 20000 then
+		print(vehicle, position, normal, impulse)
+	end
 end)

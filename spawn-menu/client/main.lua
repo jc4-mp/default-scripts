@@ -72,17 +72,15 @@ function onRender()
             local item = category.items[selection.item_index]
             if item then
                 if category.type == "vehicle" then
-                    local player = Players.Local()
-                    local spawn_pos = player:GI():GetAimPosition()
+                    local spawn_pos = Players.LocalPlayer():GetAimPosition()
                     Net.Send("spawn", item.id, spawn_pos)
                 elseif category.type == "mounted_gun" then
-                    local player = Players.Local()
-                    local spawn_pos = player:GI():GetAimPosition()
+                    local spawn_pos = Players.LocalPlayer():GetAimPosition()
                     Net.Send("spawnMg", item.id, spawn_pos)
                 elseif category.type == "skin" then
                     Local.SetSkin(item.id)
                 elseif category.type == "weapon" then
-                    Net.Send("weapon", item.id, Players.Local())
+                    Net.Send("weapon", item.id, Players.LocalClient())
                 end
                 toggleOpen()
             end

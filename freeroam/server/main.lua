@@ -7,7 +7,8 @@ Event.Add("OnPlayerKilled", function(player, damager, loss, hitBone, weapon, pos
 end)
 
 Event.Add("OnPlayerTeleport", function(player)
-    print("player " .. tostring(player) .. " teleported")
+    print("player:", tostring(player) .. " teleported")
+    print("health:", player:GetHealth())
 end)
 
 Net.AddEvent("lmao1", function(position)
@@ -22,4 +23,14 @@ end)
 
 Event.Add("OnPlayerDamage", function(vehicle, damager, loss, hitbone, weaponHash, hitposition)
 	--Event.Cancel()
+end)
+
+Event.Add("OnChat", function(player, msg)
+	--Event.Cancel()
+end)
+
+Event.Add("OnPlayerVehicleEnter", function(player, vehicle, seat, oldPlayer)
+end)
+
+Event.Add("OnPlayerVehicleExit", function(player, vehicle, seat)
 end)

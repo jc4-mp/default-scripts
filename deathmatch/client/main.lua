@@ -45,7 +45,7 @@ Event.Add("OnPlayerKilled", function(player, damager, loss, hitBone, weapon, pos
 end)
 
 Cmd.Add("p", function()
-	print(Players.Local():GetNetPlayer():GetPosition() + vec3(0, 1, 0))
+	print(Players.LocalPlayer():GetPosition() + vec3(0, 1, 0))
 end)
 
 Event.Add("OnResourceStart", function(name)
