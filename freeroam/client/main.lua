@@ -10,7 +10,7 @@ Event.Add("OnResourceStart", function(name)
 		Local.UnlockAbility(Ability.ParachuteSlingshot)
 
 		Players.SetTagsEnabled(true)
-		World.SetTime(12)
+		World.SetTime(8)
 	end
 end)
 
@@ -50,6 +50,23 @@ Event.Add("OnPlayerTeleport", function(player)
 end)
 
 Event.Add("OnPlayerRagdollStart", function(player)
+	--[[local camPos = Camera.GetPosition()
+	local aimPos = player:GetAimPosition()
+	local delta = aimPos - camPos
+	local dir = delta:normalize()
+	local ray = Physics.Raycast(camPos, camPos + dir * 1000.0, PfxLayer.FullCollision)
+
+	print(ray.hasHit)
+
+	if ray.hasHit then
+		print(ray.normal, ray.hitPos, ray.hitDistance, ray.gameObject, ray.netObject:AsVehicle(), ray.netObject:AsRigidObject())
+	end]]
+end)
+
+Cmd.Add("tt", function()
+	for k, v in pairs(World.GetAllByType(NetObjectType.Vehicle)) do
+		print(k, v)
+	end
 end)
 
 Event.Add("OnPlayerRagdollEnd", function(player)
@@ -65,4 +82,16 @@ Event.Add("OnVehicleCollision", function(vehicle, position, normal, impulse)
 	if impulse > 20000 then
 		print(vehicle, position, normal, impulse)
 	end
+end)
+
+Event.Add("OnVehicleHornPlay", function(vehicle)
+	print("play")
+end)
+
+Event.Add("OnVehicleHornStop", function(vehicle)
+	print("stop")
+end)
+
+Event.Add("OnClientJoin", function()
+	print("JOIN")
 end)
