@@ -17,6 +17,10 @@ Net.AddEvent("lmao1", function(position)
     end
 end)
 
+Net.AddEvent("tether", function(position)
+    World.SpawnTether(position)
+end)
+
 Event.Add("OnVehicleDamage", function(vehicle, damager, loss, hitbone, weaponHash, hitposition)
 	--Event.Cancel()
 end)

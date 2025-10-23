@@ -63,10 +63,16 @@ Event.Add("OnPlayerRagdollStart", function(player)
 	end]]
 end)
 
+local ro = nil
+
 Cmd.Add("tt", function()
-	for k, v in pairs(World.GetAllByType(NetObjectType.Vehicle)) do
-		print(k, v)
-	end
+    --[[ro = World.SpawnRigidObject(
+        Players.LocalPlayer():GetAimPosition() + vec3(0, 1, 0),
+        "models/characters/animals/birds/toucan/toucan_red_body.modelc",
+        "models/environments/locale_global/mil_prop_barrel_a/mil_prop_barrel_a_barrel_b1_col.pfxc",
+        RigidObjectMotionType.Static)]]
+
+	Terrain.SpawnVegetationShockwave(Players.LocalPlayer():GetAimPosition(), 0.0, 20.0, 1.0, 10.0, 5.0, 5.0, 0.1)
 end)
 
 Event.Add("OnPlayerRagdollEnd", function(player)
@@ -92,6 +98,9 @@ Event.Add("OnVehicleHornStop", function(vehicle)
 	print("stop")
 end)
 
-Event.Add("OnClientJoin", function()
-	print("JOIN")
+Event.Add("OnPostRender", function()
+	--local q = Players.LocalPlayer():GetEulerRotation()
+	--print(q.x, q.y, q.z)
 end)
+
+print("2")
