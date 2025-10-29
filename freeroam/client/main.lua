@@ -64,6 +64,7 @@ Event.Add("OnPlayerRagdollStart", function(player)
 end)
 
 local ro = nil
+local fx = nil
 
 Cmd.Add("tt", function()
     --[[ro = World.SpawnRigidObject(
@@ -72,7 +73,12 @@ Cmd.Add("tt", function()
         "models/environments/locale_global/mil_prop_barrel_a/mil_prop_barrel_a_barrel_b1_col.pfxc",
         RigidObjectMotionType.Static)]]
 
-	Terrain.SpawnVegetationShockwave(Players.LocalPlayer():GetAimPosition(), 0.0, 20.0, 1.0, 10.0, 5.0, 5.0, 0.1)
+	if fx ~= nil then
+		fx:Stop(false)
+		fx = nil
+	else
+		fx = FX.Spawn("effects/fire/fire_barrel.effc", Players.LocalPlayer():GetAimPosition())
+	end
 end)
 
 Event.Add("OnPlayerRagdollEnd", function(player)
