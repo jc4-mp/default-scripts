@@ -49,6 +49,8 @@ local Weapons =
     }
 }
 
+local GLOBAL = vec3(9666.298, 517.0919, 8122.316)
+
 Event.Add("OnPlayerKilled", function(player, damager, loss, hitBone, weapon, position)
 	if player:GetData("robber", false) then
 		Chat.Broadcast(string.format(DeathMessages.Robbers[math.random(1, #DeathMessages.Robbers)], player:GetNick()))
@@ -62,7 +64,7 @@ function startRound()
     if not robberClient then return end
 
     local robber = robberClient:GetNetPlayer()
-    local robberCar = World.SpawnVehicle(Vehicles.Robbers[math.random(1, #Vehicles.Robbers)], robber:GetPosition() + vec3(3, 0.2, 0), vec3(0, 0, 0))
+    local robberCar = World.SpawnVehicle(Vehicles.Robbers[math.random(1, #Vehicles.Robbers)], GLOBAL + vec3(math.random(-200, 200), 1.0, math.random(-200, 200)), vec3(0, 0, 0))
 
     robberCar:SetMaxHealth(5000)
     robberCar:SetHealth(5000)
@@ -78,7 +80,7 @@ end
 
 function spawnCops(robberClient)
     local allClients = Players.GetJoined()
-    local heliSpawned = false
+    local heliSpawned = true
 
     for _, client in ipairs(allClients) do
         if client ~= robberClient then
@@ -89,7 +91,7 @@ function spawnCops(robberClient)
                 copVehicle = World.SpawnVehicle("v203_helicopter_lightattack_military_01", cop:GetPosition() + vec3(0, 10, 0), vec3(0, 0, 0))
                 heliSpawned = true
             else
-                copVehicle = World.SpawnVehicle(Vehicles.Cops[math.random(1, #Vehicles.Cops)], cop:GetPosition() + vec3(0, 1, 0), vec3(0, 0, 0))
+                copVehicle = World.SpawnVehicle(Vehicles.Cops[math.random(1, #Vehicles.Cops)], GLOBAL + vec3(math.random(-200, 200), 1.0, math.random(-200, 200)), vec3(0, 0, 0))
             end
 
             cop:WarpIntoVehicle(copVehicle, VehicleSeat.DriverSeat)
