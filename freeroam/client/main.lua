@@ -1,6 +1,7 @@
 Event.Add("OnResourceStart", function(name)
 	if Resource.Name == name then
 		Local.UnlockAbility(Ability.GrapplingHook)
+		Local.LockAbility(Ability.Tether)
 		Local.UnlockAbility(Ability.Parachute)
 		Local.UnlockAbility(Ability.Wingsuit)
 		Local.UnlockAbility(Ability.Hammer)
@@ -84,17 +85,11 @@ end)
 Event.Add("OnPlayerRagdollEnd", function(player)
 end)
 
-Event.Add("OnVehicleNitrousUse", function(vehicle)
-end)
-
-Event.Add("OnVehicleTurboJump", function(vehicle)
-end)
-
-Event.Add("OnVehicleCollision", function(vehicle, position, normal, impulse)
+--[[Event.Add("OnVehicleCollision", function(vehicle, position, normal, impulse)
 	if impulse > 20000 then
 		print(vehicle, position, normal, impulse)
 	end
-end)
+end)]]
 
 Event.Add("OnVehicleHornPlay", function(vehicle)
 	print("play")
@@ -109,4 +104,4 @@ Event.Add("OnPostRender", function()
 	--print(q.x, q.y, q.z)
 end)
 
-print("2")
+print("freeroam loaded 1")
