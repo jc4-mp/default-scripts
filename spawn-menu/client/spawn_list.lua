@@ -1146,14 +1146,14 @@ return {
                     name = "Monster Truck Level 3",
                     id = "v078_car_monstertruckdlc1_level_3"
                 },
-                {
+                --[[{
                     separator = true,
                     name = "Brawler Mech"
                 },
                 {
                     name = "Loader Mech",
                     id = "v600_mech_loader_garage"
-                },
+                },]]
                 {
                     separator = true,
                     name = "Shark & Bark Pack"

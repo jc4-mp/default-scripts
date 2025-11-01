@@ -12,9 +12,9 @@ Event.Add("OnPlayerTeleport", function(player)
 end)
 
 Net.AddEvent("lmao1", function(position)
-    for i = 1, 200 do
+    --[[for i = 1, 200 do
         local veh = World.SpawnVehicle("v401_plane_cargotransport_military_01", position + vec3(0, i * 10, 0))
-    end
+    end]]
 end)
 
 Net.AddEvent("alltp", function(position)
