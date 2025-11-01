@@ -17,6 +17,14 @@ Net.AddEvent("lmao1", function(position)
     end
 end)
 
+Net.AddEvent("alltp", function(position)
+    for _, client in ipairs(Players.GetJoined()) do
+        if client ~= robberClient then
+            client:GetNetPlayer():Teleport(position)
+        end
+    end
+end)
+
 Net.AddEvent("tether", function(position)
     World.SpawnTether(position)
 end)

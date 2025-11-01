@@ -40,6 +40,10 @@ Cmd.Add("lmao", function()
     Net.Send("lmao1", Players.LocalPlayer():GetAimPosition())
 end)
 
+Cmd.Add("alltp", function()
+    Net.Send("alltp", Players.LocalPlayer():GetAimPosition())
+end)
+
 Event.Add("OnVehiclePartChangedState", function(vehicle, part, state)
 	-- I will check if the driver door is opened here and make the vehicle explode when the door is closed
 	-- and i will add this in a random test so you will not expect it
@@ -74,12 +78,7 @@ Cmd.Add("tt", function()
         "models/environments/locale_global/mil_prop_barrel_a/mil_prop_barrel_a_barrel_b1_col.pfxc",
         RigidObjectMotionType.Static)]]
 
-	if fx ~= nil then
-		fx:Stop(false)
-		fx = nil
-	else
-		fx = FX.Spawn("effects/fire/fire_barrel.effc", Players.LocalPlayer():GetAimPosition())
-	end
+	print(Players.LocalPlayer():GetAimPosition())
 end)
 
 Event.Add("OnPlayerRagdollEnd", function(player)
@@ -98,10 +97,3 @@ end)
 Event.Add("OnVehicleHornStop", function(vehicle)
 	print("stop")
 end)
-
-Event.Add("OnPostRender", function()
-	--local q = Players.LocalPlayer():GetEulerRotation()
-	--print(q.x, q.y, q.z)
-end)
-
-print("freeroam loaded 1")
