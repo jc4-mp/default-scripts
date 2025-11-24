@@ -1,9 +1,9 @@
 Event.Add("OnPlayerKilled", function(player, damager, loss, hitBone, weapon, position)
 	Timer.Set(function(player, pos)
         player:Respawn(pos)
-    end, 5000, 1, player, position)
+    end, 15000, 1, player, position)
 
-    print(position)
+	print("DEATH", position, player, loss)
 end)
 
 Event.Add("OnPlayerTeleport", function(player)

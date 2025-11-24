@@ -97,3 +97,7 @@ end)
 Event.Add("OnVehicleHornStop", function(vehicle)
 	print("stop")
 end)
+
+Event.Add("OnPlayerKilled", function(player, damager, loss, hitBone, weapon, position)
+	print("DEATH", position, player, loss)
+end)

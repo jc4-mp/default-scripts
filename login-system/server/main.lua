@@ -2,6 +2,7 @@ local TableResult = SQL.Execute([[
     CREATE TABLE IF NOT EXISTS accounts (
 		steam_id TEXT PRIMARY KEY NOT NULL,
         last_seen DATETIME DEFAULT CURRENT_TIMESTAMP,
+        skin VARCHAR(128) DEFAULT '',
 		x FLOAT DEFAULT NULL,
 		y FLOAT DEFAULT NULL,
 		z FLOAT DEFAULT NULL
@@ -24,18 +25,20 @@ function LoadPlayer(client)
 	
 	-- get this player's info
 	
-	local entries = SQL.Query("SELECT steam_id, x, y, z FROM accounts WHERE steam_id = ?", steamId)
+	local entries = SQL.Query("SELECT steam_id, skin, x, y, z FROM accounts WHERE steam_id = ?", steamId)
 	if #entries == 1 then
 		-- load player's info
 		
 		local entry = entries[1]
 		
 		if entry.x and entry.y and entry.z then
+			local player = client:GetNetPlayer()
 			local position = vec3(entry.x, entry.y, entry.z)
 
 			print("Loaded position:", position)
 
-			client:GetNetPlayer():Teleport(position)
+			player:SetSkin(entry.skin)
+			player:Teleport(position)
 		end
 			
 		print("Player " .. steamId .. " logged in")
@@ -50,11 +53,12 @@ function SavePlayer(client)
 	local steamId = client:GetSteamId()
 	local player = client:GetNetPlayer()
 	local playerPos = player:GetPosition()
+	local skin = player:GetSkin()
 	
 	local result = SQL.Execute([[
 		UPDATE accounts
-		SET x = ?, y = ?, z = ?, last_seen = CURRENT_TIMESTAMP
-		WHERE steam_id = ?]], playerPos.x, playerPos.y, playerPos.z, steamId)
+		SET x = ?, y = ?, z = ?, skin = ?, last_seen = CURRENT_TIMESTAMP
+		WHERE steam_id = ?]], playerPos.x, playerPos.y, playerPos.z, skin, steamId)
 
 	print("saved position:", playerPos)
 	

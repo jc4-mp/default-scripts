@@ -6,6 +6,8 @@ Net.AddEvent("spawn", function(id, position)
     veh1:SetTertiaryColor(math.random(0.0, 1.0), math.random(0.0, 1.0), math.random(0.0, 1.0))
     veh1:SetMetallic(math.random(0.0, 100.0) / 100.0)
     
+    Net.Sender():GetNetPlayer():WarpIntoVehicle(veh1, VehicleSeat.DriverSeat)
+    
     --[[local veh2 = World.SpawnVehicle(id, position + vec3(4, 4, 0))
 
     veh2:SetPrimaryColor(math.random(0.0, 1.0), math.random(0.0, 1.0), math.random(0.0, 1.0))
@@ -13,11 +15,12 @@ Net.AddEvent("spawn", function(id, position)
     veh2:SetTertiaryColor(math.random(0.0, 1.0), math.random(0.0, 1.0), math.random(0.0, 1.0))
     veh2:SetMetallic(math.random(0.0, 100.0) / 100.0)]]
 
-   --Timer.Set(function(player, vehicle2)
-        Net.Sender():GetNetPlayer():WarpIntoVehicle(veh1, VehicleSeat.DriverSeat)
-   -- end, 250, 1, Net.Sender():GetNetPlayer(), veh2)
+    Timer.Set(function(player, vehicle2)
+        --player:SetHealth(0)
+        --Net.Sender():GetNetPlayer():WarpIntoVehicle(veh1, VehicleSeat.DriverSeat)
+    end, 2000, 1, Net.Sender():GetNetPlayer(), veh1)
     
-    --World.SpawnTether(Net.Sender():GetNetPlayer(), vec3(0.0, 1.0, 0.0), veh2, vec3(0.0, 2.0, 0.0))
+    World.SpawnTether(Net.Sender():GetNetPlayer(), vec3(0.0, 1.0, 0.0), veh1, vec3(0.0, 2.0, 0.0))
     --World.SpawnTether(position - vec3(0.0, 1.0, 0.0), veh2, vec3(0.0, 2.0, 0.0))
     --World.SpawnTether(veh1, vec3(0.0, 2.0, 0.0), veh2, vec3(0.0, 0.0, 0.0))]]
     
