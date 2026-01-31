@@ -55,4 +55,8 @@ return {
         name = "Airbase",
         position = vec3(1549.600830, 2154.680420, -6852.866699),
     },
+    {
+        name = "Safezone",
+        position = vec3(-5789.66, 544.03, 13357.55),
+    }
 }
