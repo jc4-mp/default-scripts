@@ -14,7 +14,7 @@ local COLOR_WARN = vec4(1, 0.85, 0.3, 1)
 local COLOR_BAD = vec4(1, 0.35, 0.35, 1)
 local COLOR_BG = vec4(0, 0, 0, 0.55)
 
-local visible = true
+local visible = false
 local lines = {}
 local last_refresh = -math.huge
 
