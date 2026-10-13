@@ -6,6 +6,9 @@ end)
 
 Cmd.Add("ss", function()
     local channel = Sound.Play2D("ay", false)
+    if not channel then
+        return
+    end
 
     channel:SetPaused(true)
 
@@ -15,5 +18,10 @@ Cmd.Add("ss", function()
 end)
 
 Cmd.Add("ss2", function()
-    print(Sound.Play3D("ay", Players.LocalPlayer():GetAimPosition(), false))
+    local channel = Sound.Play3D("ay", World.LocalPlayer():AsPlayer():GetAimPosition(), false)
+    if not channel then
+        return
+    end
+
+    print(channel)
 end)
