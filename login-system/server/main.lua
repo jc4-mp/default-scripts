@@ -1,4 +1,4 @@
-local TableResult = SQL.Execute([[
+local TableResult, TableError = SQL.Execute([[
     CREATE TABLE IF NOT EXISTS accounts (
 		steam_id TEXT PRIMARY KEY NOT NULL,
         last_seen DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -8,20 +8,20 @@ local TableResult = SQL.Execute([[
 		z FLOAT DEFAULT NULL
     )]])
 
-if TableResult.success then
+if TableResult then
     print("Accounts table created successfully")
 else
-    print("Accounts table creation failed:", TableResult.error)
+    print("Accounts table creation failed:", TableError)
 end
 
 function LoadPlayer(client)
-	if not TableResult.success then return end
+	if not TableResult then return end
 	
 	-- register player if it doesn't exist
 	
-	local steamId = client:GetSteamId()
+	local steamId = client:GetUserId()
 	
-	SQL.Execute("INSERT INTO accounts (steam_id) VALUES (?)", steamId)
+	SQL.Execute("INSERT OR IGNORE INTO accounts (steam_id) VALUES (?)", steamId)
 	
 	-- get this player's info
 	
@@ -32,7 +32,7 @@ function LoadPlayer(client)
 		local entry = entries[1]
 		
 		if entry.x and entry.y and entry.z then
-			local player = client:GetNetPlayer()
+			local player = client:GetPlayer():AsPlayer()
 			local position = vec3(entry.x, entry.y, entry.z)
 
 			print("Loaded position:", position)
@@ -48,30 +48,47 @@ function LoadPlayer(client)
 end
 
 function SavePlayer(client)
-	if not TableResult.success then return end
+	if not TableResult then return end
 
-	local steamId = client:GetSteamId()
-	local player = client:GetNetPlayer()
+	local steamId = client:GetUserId()
+	local player = client:GetPlayer():AsPlayer()
 	local playerPos = player:GetPosition()
 	local skin = player:GetSkin()
 	
-	local result = SQL.Execute([[
+	local result, err = SQL.Execute([[
 		UPDATE accounts
 		SET x = ?, y = ?, z = ?, skin = ?, last_seen = CURRENT_TIMESTAMP
 		WHERE steam_id = ?]], playerPos.x, playerPos.y, playerPos.z, skin, steamId)
 
 	print("saved position:", playerPos)
 	
-	if result.success then
+	if result then
 		print("Player " .. steamId .. " saved")
 	else
-		print("Player " .. steamId .." could not be saved:", result.error)
+		print("Player " .. steamId .." could not be saved:", err)
 	end
 end
+
+-- a client starts its resources before it joins, and a player only has its object once joined: those are loaded
+-- on join
+
+local pendingLoads = {}
 
 Event.Add("OnPlayerResourceAction", function(client, name, action)
 	if Resource.Name ~= name or action ~= ResourceAction.Start then return end
 	
+	if client:GetPlayer() then
+		LoadPlayer(client)
+	else
+		pendingLoads[client:GetUserId()] = true
+	end
+end)
+
+Event.Add("OnPlayerJoin", function(client)
+	if not pendingLoads[client:GetUserId()] then return end
+
+	pendingLoads[client:GetUserId()] = nil
+
 	LoadPlayer(client)
 end)
 
