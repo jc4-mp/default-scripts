@@ -25,14 +25,26 @@ end
 webview_id = created_webview_id
 local localResourceTable = {}
 
+-- clients have no pings (only the server keeps them), the server sends them every second while the dashboard is open:
+-- user id -> ping
+local pings = {}
+
+Net.AddEvent("Dashboard_Pings", function(list)
+    pings = {}
+    for _, entry in ipairs(list) do
+        pings[entry[1]] = entry[2]
+    end
+end)
+
 local function BuildPlayerList()
     local playerData = {}
-    local players = Players.GetJoined()
+    local players = World.GetPlayers()
     for _, client in ipairs(players) do
+        local ping = pings[client:GetUserId()]
         table.insert(playerData, {
-            nick = client:GetNick(),
-            ping = client:GetPing(),
-            steamid = client:GetSteamId(),
+            nick = client:GetName(),
+            ping = ping and math.floor(ping) or "-",
+            steamid = client:GetUserId(),
             status = "normal"
         })
     end
@@ -72,6 +84,7 @@ local function CloseDashboard()
     if not webviewOpen then return end
 
     webviewOpen = false
+    Net.Send("Dashboard_SetOpen", false)
     if _G.cursorVisibilityManager then
         _G.cursorVisibilityManager:close("dashboard")
     else
@@ -104,6 +117,8 @@ Net.AddEvent("Dashboard_AccessResult", function(data)
     dashboardBusy = false  -- clear regardless of grant/deny so F2 works again
     if data and data.granted then
         webviewOpen = true
+        pings = {}
+        Net.Send("Dashboard_SetOpen", true)
         if _G.cursorVisibilityManager then
             _G.cursorVisibilityManager:open("dashboard")
         else
@@ -167,7 +182,7 @@ local function handle_webview_message(event, data)
         local rot = data.rotation or { x = 0, y = 0, z = 0 }
 
         -- Get local player and aim position
-        local player = Players.LocalPlayer()
+        local player = World.LocalPlayer():AsPlayer()
         local aimPos = player:GetAimPosition()
 
 

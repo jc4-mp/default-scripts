@@ -5,7 +5,8 @@ local VehicleTableReady = false
 local VehicleTableError = nil
 local LoadSavedVehicles
 
-SQL.ExecuteAsync([[
+-- SQL calls are synchronous: each returns its result, or nil and the error
+local tableResult, tableError = SQL.Execute([[
     CREATE TABLE IF NOT EXISTS vehicles (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         game_id TEXT NOT NULL,
@@ -19,16 +20,15 @@ SQL.ExecuteAsync([[
         rot_z REAL DEFAULT 0,
         saved_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
-]], function(result)
-    if result and result.success then
-        VehicleTableReady = true
-        print("[VehicleDB] Vehicles table ready")
-        if LoadSavedVehicles then LoadSavedVehicles() end
-    else
-        VehicleTableError = result and result.error or "unknown error"
-        print("[VehicleDB] Vehicles table creation failed:", VehicleTableError)
-    end
-end)
+]])
+
+if tableResult then
+    VehicleTableReady = true
+    print("[VehicleDB] Vehicles table ready")
+else
+    VehicleTableError = tableError or "unknown error"
+    print("[VehicleDB] Vehicles table creation failed:", VehicleTableError)
+end
 
 Net.AddEvent("ResourceActionFromClient", function(data)
     local resource = data.resource
@@ -50,8 +50,7 @@ Net.AddEvent("SpawnVehicle_Server", function(data)
     if not data then return end
 
     local sender    = Net.Sender()
-    local netPlayer = sender:GetNetPlayer()
-    local nick      = netPlayer:GetNick()
+    local nick      = sender:GetName()
     local vehicleId = data.id
     local modelName = data.model
     local category  = data.category
@@ -101,20 +100,48 @@ Net.AddEvent("Dashboard_RequestAccess", function()
     local sender = Net.Sender()
     if not sender then return end
 
-    local acl  = sender:GetAclLevel()
-    local nick = sender:GetNick()
+    local acl  = sender:GetAcl()
+    local nick = sender:GetName()
 
-    if acl == AclLevel.Owner or acl == AclLevel.Admin or acl == AclLevel.Moderator then
+    if sender:HasAcl(AclLevel.Owner) or sender:HasAcl(AclLevel.Admin) or sender:HasAcl(AclLevel.Moderator) then
         local role = "admin"
-        if acl == AclLevel.Moderator then role = "moderator" end
+        if not sender:HasAcl(AclLevel.Owner) and not sender:HasAcl(AclLevel.Admin) then role = "moderator" end
 
         print(string.format("[Dashboard] Access granted to %s (role=%s)", nick, role))
-        Net.SendToTarget(sender, "Dashboard_AccessResult", { granted = true, role = role })
+        Net.SendToPlayer(sender, "Dashboard_AccessResult", { granted = true, role = role })
     else
         print(string.format("[Dashboard] Access denied for %s (ACL=%s)", nick, tostring(acl)))
-        Net.SendToTarget(sender, "Dashboard_AccessResult", { granted = false })
+        Net.SendToPlayer(sender, "Dashboard_AccessResult", { granted = false })
     end
 end)
+
+-- clients have no pings (only the server keeps them): every second they go to the players with the dashboard open
+local dashboardOpen = {} -- user id -> PlayerHandle
+
+Net.AddEvent("Dashboard_SetOpen", function(open)
+    local sender = Net.Sender()
+    if sender then dashboardOpen[sender:GetUserId()] = open and sender or nil end
+end)
+
+Event.Add("OnPlayerQuit", function(client)
+    dashboardOpen[client:GetUserId()] = nil
+end)
+
+Timer.Set(function()
+    if next(dashboardOpen) == nil then return end
+
+    local pings = {}
+    for _, client in ipairs(World.GetPlayers()) do
+        table.insert(pings, { client:GetUserId(), client:GetPing() })
+    end
+
+    local targets = {}
+    for _, client in pairs(dashboardOpen) do
+        table.insert(targets, client)
+    end
+
+    Net.SendToPlayers(targets, "Dashboard_Pings", pings)
+end, 1000, -1)
 
 Net.AddEvent("Vehicle_Request_List", function()
     local client = Net.Sender()
@@ -123,22 +150,22 @@ Net.AddEvent("Vehicle_Request_List", function()
         if VehicleTableError then
             print("[VehicleDB] Vehicle list unavailable:", VehicleTableError)
         end
-        Net.SendToTarget(client, "Vehicle_List_Response", { vehicles = {} })
+        Net.SendToPlayer(client, "Vehicle_List_Response", { vehicles = {} })
         return
     end
 
-    SQL.QueryAsync([[
+    local rows, error = SQL.Query([[
         SELECT model, spawned_by, pos_x, pos_y, pos_z, rot_x, rot_y, rot_z, saved_at
         FROM vehicles
         ORDER BY saved_at DESC
-    ]], function(rows, error)
-        if error then
-            print("[VehicleDB] Vehicle list query failed:", error)
-            rows = {}
-        end
+    ]])
 
-        Net.SendToTarget(client, "Vehicle_List_Response", { vehicles = rows or {} })
-    end)
+    if error then
+        print("[VehicleDB] Vehicle list query failed:", error)
+        rows = {}
+    end
+
+    Net.SendToPlayer(client, "Vehicle_List_Response", { vehicles = rows or {} })
 end)
 
 -- ============================================================
@@ -206,49 +233,49 @@ LoadSavedVehicles = function()
 
     print("[VehicleDB] Loading saved vehicles from database...")
 
-    SQL.QueryAsync([[
+    local rows, error = SQL.Query([[
         SELECT game_id, model, pos_x, pos_y, pos_z, rot_x, rot_y, rot_z, spawned_by, saved_at
         FROM vehicles
-    ]], function(rows, error)
-        if error then
-            print("[VehicleDB] Failed to load saved vehicles:", error)
-            return
+    ]])
+
+    if error then
+        print("[VehicleDB] Failed to load saved vehicles:", error)
+        return
+    end
+
+    if not rows or #rows == 0 then
+        print("[VehicleDB] No vehicles found in database.")
+        return
+    end
+
+    local count = 0
+    for i, v in ipairs(rows) do
+        if v.game_id and v.pos_x and v.rot_x then
+            local pos = vec3(tonumber(v.pos_x), tonumber(v.pos_y), tonumber(v.pos_z))
+            local rot = vec3(tonumber(v.rot_x), tonumber(v.rot_y), tonumber(v.rot_z))
+
+            -- Register spawn point BEFORE spawning
+            worldSpawnPoints[i] = {
+                game_id      = v.game_id,
+                pos          = pos,
+                rot          = rot,
+                active       = false,
+                vehicleNetId = nil,
+            }
+
+            -- Spawn using the tracked function so netId is recorded
+            SpawnWorldVehicleAtPoint(i)
+            count = count + 1
+
+            print(string.format(
+                "[VehicleDB] Registered spawnId=%d '%s' (%s) at (%.1f, %.1f, %.1f) | By: %s",
+                i, v.model or "unknown", v.game_id,
+                pos.x, pos.y, pos.z, v.spawned_by or "unknown"
+            ))
         end
+    end
 
-        if not rows or #rows == 0 then
-            print("[VehicleDB] No vehicles found in database.")
-            return
-        end
-
-        local count = 0
-        for i, v in ipairs(rows) do
-            if v.game_id and v.pos_x and v.rot_x then
-                local pos = vec3(tonumber(v.pos_x), tonumber(v.pos_y), tonumber(v.pos_z))
-                local rot = vec3(tonumber(v.rot_x), tonumber(v.rot_y), tonumber(v.rot_z))
-
-                -- Register spawn point BEFORE spawning
-                worldSpawnPoints[i] = {
-                    game_id      = v.game_id,
-                    pos          = pos,
-                    rot          = rot,
-                    active       = false,
-                    vehicleNetId = nil,
-                }
-
-                -- Spawn using the tracked function so netId is recorded
-                SpawnWorldVehicleAtPoint(i)
-                count = count + 1
-
-                print(string.format(
-                    "[VehicleDB] Registered spawnId=%d '%s' (%s) at (%.1f, %.1f, %.1f) | By: %s",
-                    i, v.model or "unknown", v.game_id,
-                    pos.x, pos.y, pos.z, v.spawned_by or "unknown"
-                ))
-            end
-        end
-
-        print(string.format("[VehicleDB] Loaded and tracked %d world vehicle spawn(s).", count))
-    end)
+    print(string.format("[VehicleDB] Loaded and tracked %d world vehicle spawn(s).", count))
 end
 
 -- ============================================================
@@ -317,7 +344,7 @@ Net.AddEvent("Vehicle_Set_Waypoint", function(data)
     print(string.format("[VehicleSpawner] Waypoint for %s -> (%.2f, %.2f, %.2f)",
         tostring(data.model or "unknown"), pos.x, pos.y, pos.z))
 
-    Net.SendToTarget(sender, "Vehicle_Waypoint_Broadcast", {
+    Net.SendToPlayer(sender, "Vehicle_Waypoint_Broadcast", {
         netid = nid,
         id = data.id,
         model = data.model,
@@ -333,8 +360,7 @@ Net.AddEvent("Vehicle_Save_Request", function(data)
         return
     end
 
-    local player     = client:GetNetPlayer()
-    local playerName = player:GetNick()
+    local playerName = client:GetName()
 
     if not data or not data.model or not data.pos or not data.rot then
         print("[VehicleDB] Invalid save payload from " .. playerName)
@@ -343,39 +369,37 @@ Net.AddEvent("Vehicle_Save_Request", function(data)
 
     local pos    = data.pos
     local rot    = data.rot
-    SQL.ExecuteAsync([[
+    local result, err = SQL.Execute([[
         INSERT INTO vehicles (game_id, model, spawned_by, pos_x, pos_y, pos_z, rot_x, rot_y, rot_z)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     ]],
         tostring(data.id or ""), tostring(data.model), tostring(playerName),
         tonumber(pos.x) or 0.0, tonumber(pos.y) or 0.0, tonumber(pos.z) or 0.0,
-        tonumber(rot.x) or 0.0, tonumber(rot.y) or 0.0, tonumber(rot.z) or 0.0,
-        function(result)
-            if not result or not result.success then
-                print("[VehicleDB] Vehicle save failed:", result and result.error or "unknown error")
-                return
-            end
+        tonumber(rot.x) or 0.0, tonumber(rot.y) or 0.0, tonumber(rot.z) or 0.0)
 
-            SQL.QueryAsync("SELECT saved_at FROM vehicles ORDER BY saved_at DESC LIMIT 1", function(rows, error)
-                if error then
-                    print("[VehicleDB] Vehicle save timestamp lookup failed:", error)
-                end
+    if not result then
+        print("[VehicleDB] Vehicle save failed:", err or "unknown error")
+        return
+    end
 
-                local row = rows and rows[1]
-                local savedAt = row and row.saved_at or os.date("%Y-%m-%d %H:%M:%S")
+    local rows, error = SQL.Query("SELECT saved_at FROM vehicles ORDER BY saved_at DESC LIMIT 1")
+    if error then
+        print("[VehicleDB] Vehicle save timestamp lookup failed:", error)
+    end
 
-                Net.Broadcast("Vehicle_Save_Broadcast", {
-                    model = data.model,
-                    spawned_by = playerName,
-                    pos = pos,
-                    rot = rot,
-                    saved_at = savedAt
-                })
+    local row = rows and rows[1]
+    local savedAt = row and row.saved_at or os.date("%Y-%m-%d %H:%M:%S")
 
-                print(string.format("[VehicleDB] %s saved '%s' at (%.2f, %.2f, %.2f) | %s",
-                    playerName, data.model, pos.x, pos.y, pos.z, savedAt))
-            end)
-        end)
+    Net.Broadcast("Vehicle_Save_Broadcast", {
+        model = data.model,
+        spawned_by = playerName,
+        pos = pos,
+        rot = rot,
+        saved_at = savedAt
+    })
+
+    print(string.format("[VehicleDB] %s saved '%s' at (%.2f, %.2f, %.2f) | %s",
+        playerName, data.model, pos.x, pos.y, pos.z, savedAt))
 end)
 
 local function getResourceList()
@@ -393,15 +417,14 @@ end
 Net.AddEvent("resource_request", function()
     local sender        = Net.Sender()
     local resource_list = getResourceList()
-    Net.SendToTarget(sender, "resource_response", resource_list)
+    Net.SendToPlayer(sender, "resource_response", resource_list)
 end)
 
 if VehicleTableReady then LoadSavedVehicles() end
 
 Net.AddEvent("Loot:RequestSpawnList", function()
     local sender = Net.Sender()
-    local acl    = sender:GetAclLevel()
-    local nick   = sender:GetNick()
+    local nick   = sender:GetName()
 
     local function sendSpawnList(rows, error)
         if error then
@@ -425,17 +448,17 @@ Net.AddEvent("Loot:RequestSpawnList", function()
             end
         end
 
-        Net.SendToTarget(sender, "Loot:SpawnListResponse", { loots = list })
+        Net.SendToPlayer(sender, "Loot:SpawnListResponse", { loots = list })
     end
 
-    if acl == AclLevel.Moderator then
+    if sender:HasAcl(AclLevel.Moderator) and not sender:HasAcl(AclLevel.Owner) and not sender:HasAcl(AclLevel.Admin) then
         -- Only show spawns placed by this player
         print(string.format("[Loot] Moderator %s requested own spawn list", nick))
-        SQL.QueryAsync("SELECT * FROM LootSpawnPoints WHERE placed_by = ? ORDER BY id DESC", nick, sendSpawnList)
+        sendSpawnList(SQL.Query("SELECT * FROM LootSpawnPoints WHERE placed_by = ? ORDER BY id DESC", nick))
     else
         -- Admin/Owner sees everything
         print(string.format("[Loot] Admin %s requested full spawn list", nick))
-        SQL.QueryAsync("SELECT * FROM LootSpawnPoints ORDER BY id DESC", sendSpawnList)
+        sendSpawnList(SQL.Query("SELECT * FROM LootSpawnPoints ORDER BY id DESC"))
     end
 end)
 
@@ -446,23 +469,21 @@ Net.AddEvent("Loot:DeleteSpawnPoint", function(data)
         return
     end
 
-    SQL.ExecuteAsync("DELETE FROM LootSpawnPoints WHERE id = ?", id, function(result)
-        if result and result.success then
-            print(string.format("[Loot] Deleted spawn point id=%d", id))
-            Net.Broadcast("Loot:SpawnPointDeleted", { id = id })
-        else
-            print("[Loot] Delete failed:", result and result.error or "unknown error")
-        end
-    end)
+    local result, err = SQL.Execute("DELETE FROM LootSpawnPoints WHERE id = ?", id)
+    if result then
+        print(string.format("[Loot] Deleted spawn point id=%d", id))
+        Net.Broadcast("Loot:SpawnPointDeleted", { id = id })
+    else
+        print("[Loot] Delete failed:", err or "unknown error")
+    end
 end)
 
 Net.AddEvent("PlayerActionFromClient", function(data)
     local sender = Net.Sender()
     if not sender then return end
 
-    local senderAcl = sender:GetAclLevel()
-    if senderAcl ~= AclLevel.Owner and senderAcl ~= AclLevel.Admin and senderAcl ~= AclLevel.Moderator then
-        print(string.format("[Dashboard] Unauthorized player action attempt by %s", sender:GetNick()))
+    if not sender:HasAcl(AclLevel.Owner) and not sender:HasAcl(AclLevel.Admin) and not sender:HasAcl(AclLevel.Moderator) then
+        print(string.format("[Dashboard] Unauthorized player action attempt by %s", sender:GetName()))
         return
     end
 
@@ -471,12 +492,12 @@ Net.AddEvent("PlayerActionFromClient", function(data)
     local name    = tostring(data.name or "unknown")
 
     print(string.format("[Dashboard] Action '%s' on %s (%s) by %s",
-        action, name, steamid, sender:GetNick()))
+        action, name, steamid, sender:GetName()))
 
     -- Find target player
     local target = nil
-    for _, client in ipairs(Players.GetJoined()) do
-        if tostring(client:GetSteamId()) == steamid then
+    for _, client in ipairs(World.GetPlayers()) do
+        if tostring(client:GetUserId()) == steamid then
             target = client
             break
         end
@@ -489,8 +510,8 @@ Net.AddEvent("PlayerActionFromClient", function(data)
         end
         local msg = tostring(data.message or "")
         -- Send whisper message to target via chat
-        Net.SendToTarget(target, "admin_whisper", {
-            from    = sender:GetNick(),
+        Net.SendToPlayer(target, "admin_whisper", {
+            from    = sender:GetName(),
             message = msg
         })
         print(string.format("[Dashboard] Whispered to %s: %s", name, msg))
@@ -516,14 +537,14 @@ Net.AddEvent("PlayerActionFromClient", function(data)
             print("[Dashboard] TeleportTo — target not found: " .. steamid)
             return
         end
-        local targetPlayer = target:GetNetPlayer()
+        local targetPlayer = target:GetPlayer()
         if not targetPlayer then return end
         local pos = targetPlayer:GetPosition()
-        local senderPlayer = sender:GetNetPlayer()
+        local senderPlayer = sender:GetPlayer()
         if not senderPlayer then return end
-        senderPlayer:Teleport(vec3(pos.x, pos.y + 2, pos.z))
+        senderPlayer:AsPlayer():Teleport(vec3(pos.x, pos.y + 2, pos.z))
         print(string.format("[Dashboard] Teleported %s to %s at (%.1f, %.1f, %.1f)",
-            sender:GetNick(), name, pos.x, pos.y, pos.z))
+            sender:GetName(), name, pos.x, pos.y, pos.z))
     elseif action == "teleport_to_pos" then
         if not target then
             print(string.format("[Dashboard] TeleportToPos — target %s not online", steamid))
@@ -534,9 +555,9 @@ Net.AddEvent("PlayerActionFromClient", function(data)
             print("[Dashboard] TeleportToPos — invalid pos data")
             return
         end
-        local targetPlayer = target:GetNetPlayer()
+        local targetPlayer = target:GetPlayer()
         if not targetPlayer then return end
-        targetPlayer:Teleport(vec3(pos.x, pos.y, pos.z))
+        targetPlayer:AsPlayer():Teleport(vec3(pos.x, pos.y, pos.z))
         print(string.format("[Dashboard] Teleported %s to pos (%.1f, %.1f, %.1f)",
             name, pos.x, pos.y, pos.z))
     elseif action == "teleport_to_me" then
@@ -545,14 +566,14 @@ Net.AddEvent("PlayerActionFromClient", function(data)
             print("[Dashboard] TeleportToMe — target not found: " .. steamid)
             return
         end
-        local senderPlayer = sender:GetNetPlayer()
+        local senderPlayer = sender:GetPlayer()
         if not senderPlayer then return end
         local pos = senderPlayer:GetPosition()
-        local targetPlayer = target:GetNetPlayer()
+        local targetPlayer = target:GetPlayer()
         if not targetPlayer then return end
-        targetPlayer:Teleport(vec3(pos.x + 2, pos.y, pos.z))
+        targetPlayer:AsPlayer():Teleport(vec3(pos.x + 2, pos.y, pos.z))
         print(string.format("[Dashboard] Teleported %s to %s at (%.1f, %.1f, %.1f)",
-            name, sender:GetNick(), pos.x, pos.y, pos.z))
+            name, sender:GetName(), pos.x, pos.y, pos.z))
     elseif action == "set_health" then
         if not target then
             print("[Dashboard] SetHealth — target not found: " .. steamid)
@@ -560,43 +581,43 @@ Net.AddEvent("PlayerActionFromClient", function(data)
         end
         local hp = tonumber(tonumber(data.value))
         if not hp then return end
-        local targetPlayer = target:GetNetPlayer()
+        local targetPlayer = target:GetPlayer()
         if not targetPlayer then return end
-        targetPlayer:SetHealth(hp)
+        -- the UI asks for 0-800 (the old max health), health is 0..1 now
+        targetPlayer:SetHealth(math.min(hp / 800, 1))
         print(string.format("[Dashboard] Set health of %s to %.1f", name, hp))
     elseif action == "show_inventory" then
         print(string.format("[Dashboard] Fetching inventory for %s (%s)", name, steamid))
 
-        SQL.QueryAsync([[
+        local rows, error = SQL.Query([[
         SELECT category, slot, stack_data
         FROM player_inventory
         WHERE steam_id = ?
         ORDER BY category ASC, slot ASC
-    ]], steamid, function(rows, error)
-            if error then
-                print("[Dashboard] Inventory query failed:", error)
-                rows = {}
+    ]], steamid)
+        if error then
+            print("[Dashboard] Inventory query failed:", error)
+            rows = {}
+        end
+
+        local items = {}
+        if rows then
+            for _, row in ipairs(rows) do
+                table.insert(items, {
+                    category   = row.category,
+                    slot       = row.slot,
+                    stack_data = row.stack_data, -- raw JSON string, parse on client
+                })
             end
+        end
 
-            local items = {}
-            if rows then
-                for _, row in ipairs(rows) do
-                    table.insert(items, {
-                        category   = row.category,
-                        slot       = row.slot,
-                        stack_data = row.stack_data, -- raw JSON string, parse on client
-                    })
-                end
-            end
+        print(string.format("[Dashboard] Found %d inventory slots for %s", #items, name))
 
-            print(string.format("[Dashboard] Found %d inventory slots for %s", #items, name))
-
-            Net.SendToTarget(sender, "admin_inventory_data", {
-                name      = name,
-                steamid   = steamid,
-                inventory = items,
-            })
-        end)
+        Net.SendToPlayer(sender, "admin_inventory_data", {
+            name      = name,
+            steamid   = steamid,
+            inventory = items,
+        })
     else
         print(string.format("[Dashboard] Unknown action: %s", tostring(action)))
     end
