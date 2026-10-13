@@ -54,6 +54,7 @@ local MIN_PLAYERS = 2
 
 local roundRunning = false
 local roundVehicles = {}
+local pendingWarp = nil
 
 Event.Add("OnPlayerKilled", function(player, damager, loss, weapon, position)
 	if player:GetData("robber") then
@@ -84,7 +85,10 @@ function startRound()
 
     table.insert(roundVehicles, robberCar)
 
-    robber:WarpIntoVehicle(robberCar, VehicleSeat.DriverSeat)
+    -- the client only warps into a car it has, so the robber goes next to it first and is warped on the next tick
+    robber:Teleport(robberCar:GetPosition() + vec3(3, 0, 0))
+    pendingWarp = { robber = robber, car = robberCar }
+
     robber:SetData("robber", true, false)
     robber:GiveWeapon(Weapons.Robbers[math.random(1, #Weapons.Robbers)], 500, WeaponSlot.Primary)
 
@@ -126,10 +130,15 @@ function tryStartRound()
     end
 end
 
--- the round starts a moment after the join (1 s, the delay the old load-time round had)
-Event.Add("OnPlayerJoin", function(client)
-    Timer.Set(tryStartRound, 1000, 1)
-end)
+-- every second: the robber's pending warp, then a new round once enough players joined
+Timer.Set(function()
+    if pendingWarp then
+        pendingWarp.robber:WarpIntoVehicle(pendingWarp.car, VehicleSeat.DriverSeat)
+        pendingWarp = nil
+    end
+
+    tryStartRound()
+end, 1000, -1)
 
 -- the round ends when too few players are left, the next "enough players" moment starts a new one
 Event.Add("OnPlayerQuit", function(client)
