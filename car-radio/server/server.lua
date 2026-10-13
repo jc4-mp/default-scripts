@@ -1,3 +1,3 @@
 Net.AddEvent("playSong", function(vehicle, songName)
-    Net.Send("playSong", vehicle, songName)
+    Net.Broadcast("playSong", vehicle, songName)
 end)
