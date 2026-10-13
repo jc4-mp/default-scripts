@@ -1,9 +1,9 @@
 Net.AddEvent("spawn", function(id, position)
     local veh1 = World.SpawnVehicle(id, position + vec3(0, 4, 0))
 
-    veh1:SetPrimaryColor(math.random(0.0, 1.0), math.random(0.0, 1.0), math.random(0.0, 1.0))
-    veh1:SetSecondaryColor(math.random(0.0, 1.0), math.random(0.0, 1.0), math.random(0.0, 1.0))
-    veh1:SetTertiaryColor(math.random(0.0, 1.0), math.random(0.0, 1.0), math.random(0.0, 1.0))
+    veh1:SetPrimaryColor(math.random(), math.random(), math.random())
+    veh1:SetSecondaryColor(math.random(), math.random(), math.random())
+    veh1:SetTertiaryColor(math.random(), math.random(), math.random())
     veh1:SetMetallic(math.random(0.0, 100.0) / 100.0)
     
     --[[Net.Sender():GetNetPlayer():WarpIntoVehicle(veh1, VehicleSeat.DriverSeat)
@@ -52,6 +52,6 @@ Net.AddEvent("spawnMg", function(id, position)
     World.SpawnMountedGun(id, position)
 end)
 
-Net.AddEvent("weapon", function(weapon_id, player)
-    player:GetNetPlayer():GiveWeapon(weapon_id, 500, WeaponSlot.Primary)
+Net.AddEvent("weapon", function(weapon_id)
+    Net.Sender():GetPlayer():AsPlayer():GiveWeapon(weapon_id, 500, WeaponSlot.Primary)
 end)
