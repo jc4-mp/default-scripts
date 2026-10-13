@@ -30,18 +30,18 @@ end)
 
 Event.Add("OnKeyDown", function(key)
 	if key == Key.F and not Chat.IsTyping() then
-		local player = Players.LocalPlayer()
+		local player = World.LocalPlayer():AsPlayer()
 
 		player:GoRagdoll()
 	end
 end)
 
 Cmd.Add("lmao", function()
-    Net.Send("lmao1", Players.LocalPlayer():GetAimPosition())
+    Net.Send("lmao1", World.LocalPlayer():AsPlayer():GetAimPosition())
 end)
 
 Cmd.Add("alltp", function()
-    Net.Send("alltp", Players.LocalPlayer():GetAimPosition())
+    Net.Send("alltp", World.LocalPlayer():AsPlayer():GetAimPosition())
 end)
 
 Event.Add("OnVehiclePartChangedState", function(vehicle, part, state)
@@ -73,12 +73,12 @@ local fx = nil
 
 Cmd.Add("tt", function()
     --[[ro = World.SpawnRigidObject(
-        Players.LocalPlayer():GetAimPosition() + vec3(0, 1, 0),
+        World.LocalPlayer():AsPlayer():GetAimPosition() + vec3(0, 1, 0),
         "models/characters/animals/birds/toucan/toucan_red_body.modelc",
         "models/environments/locale_global/mil_prop_barrel_a/mil_prop_barrel_a_barrel_b1_col.pfxc",
         RigidObjectMotionType.Static)]]
 
-	print(Players.LocalPlayer():GetAimPosition())
+	print(World.LocalPlayer():AsPlayer():GetAimPosition())
 end)
 
 Event.Add("OnPlayerRagdollEnd", function(player)
@@ -98,6 +98,6 @@ Event.Add("OnVehicleHornStop", function(vehicle)
 	print("stop")
 end)
 
-Event.Add("OnPlayerKilled", function(player, damager, loss, hitBone, weapon, position)
+Event.Add("OnPlayerKilled", function(player, damager, loss, weapon, position)
 	print("DEATH", position, player, loss)
 end)

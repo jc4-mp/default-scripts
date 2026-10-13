@@ -1,4 +1,4 @@
-Event.Add("OnPlayerKilled", function(player, damager, loss, hitBone, weapon, position)
+Event.Add("OnPlayerKilled", function(player, damager, loss, weapon, position)
 	Timer.Set(function(player, pos)
         player:Respawn(pos)
     end, 15000, 1, player, position)
@@ -18,9 +18,9 @@ Net.AddEvent("lmao1", function(position)
 end)
 
 Net.AddEvent("alltp", function(position)
-    for _, client in ipairs(Players.GetJoined()) do
+    for _, client in ipairs(World.GetPlayers()) do
         if client ~= robberClient then
-            client:GetNetPlayer():Teleport(position)
+            client:GetPlayer():AsPlayer():Teleport(position)
         end
     end
 end)
