@@ -9,3 +9,7 @@ end)
 Net.AddEvent("setTornadoPos", function(position)
     Weather.SyncProperty(WeatherProperty.TornadoPosition, position)
 end)
+
+Net.AddEvent("setSandstorm", function(position)
+    Weather.SyncProperty(WeatherProperty.SandstormPosition, position)
+end)

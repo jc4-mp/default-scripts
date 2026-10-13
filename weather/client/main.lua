@@ -1,3 +1,5 @@
+local water = nil
+
 Event.Add("OnKeyDown", function(key)
 	if Chat.IsTyping() then return end
 
@@ -11,5 +13,15 @@ Event.Add("OnKeyDown", function(key)
 
 	if key == Key.N then
 		Net.Send("setTornadoPos", Players.LocalPlayer():GetAimPosition())
+	end
+
+	if key == Key.J then
+		--Net.Send("setSandstorm", Players.LocalPlayer():GetAimPosition())
+		if water then
+			water:Destroy()
+			water = nil
+		else
+			water = World.SpawnWaterBox(Players.LocalPlayer():GetAimPosition(), vec3(10, 5, 10), 1)
+		end
 	end
 end)

@@ -32,7 +32,7 @@ function onRender()
     UI.SetNextWindowSize(window_size, 0)
     UI.SetNextWindowPos(vec2(render_size.x * 0.5 - window_size.x / 2, render_size.y * 0.5 - window_size.y / 2), 0)
 
-    local main_window_flags = WindowFlags.NoResize | WindowFlags.NoScrollbar | WindowFlags.NoCollapse
+    local main_window_flags = WindowFlags.NoResize + WindowFlags.NoScrollbar + WindowFlags.NoCollapse
 
     if UI.Begin("Spawn Menu", main_window_flags) then
         local active_tab = 1

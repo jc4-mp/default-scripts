@@ -117,7 +117,7 @@ function renderResourcesTab()
     -- Resource list
     local table_height = UI.GetContentRegionAvail().y - 50
     if UI.BeginChild("ResourceListChild", vec2(0, table_height), true) then
-        local table_flags = UI.TableFlags_ScrollY | UI.TableFlags_RowBg | UI.TableFlags_BordersOuter
+        local table_flags = UI.TableFlags_ScrollY + UI.TableFlags_RowBg + UI.TableFlags_BordersOuter
         if UI.BeginTable("ResourceTable", 3, table_flags) then
             -- Table headers
             UI.TableSetupScrollFreeze(0, 1)

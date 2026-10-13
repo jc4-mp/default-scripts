@@ -1,0 +1,2571 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome is required for the new icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* ============================
+           DO NOT TOUCH (PRESERVED)
+           ============================ */
+        body {
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        /* === TABLE STYLES (PRESERVED) === */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Rajdhani', sans-serif;
+            margin-top: 10px;
+        }
+
+        /* The general table headers. Apply the new background from the top-nav-bar */
+        thead tr {
+            background-color: rgba(33, 34, 45, 1);
+            border-bottom: 1px solid #282830;
+        }
+
+        th {
+            text-align: left;
+            padding: 16px 20px;
+            color: #a1a1aa;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: none;
+            border: none;
+        }
+
+        /* Base row background - use a slightly darker transparent variant for blending */
+        tbody tr {
+            background-color: rgba(10, 12, 15, 0.6) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: background-color 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background-color: rgba(21, 20, 27, 0.8) !important;
+            cursor: pointer;
+        }
+
+        td {
+            padding: 14px 20px;
+            color: #e4e4e7;
+            font-size: 14px;
+            vertical-align: middle;
+            background: none !important;
+            border: none;
+        }
+
+        /* Specific Column Tweaks */
+        .col-name {
+            font-weight: 600;
+            color: white;
+        }
+
+        .col-actions {
+            text-align: right;
+        }
+
+        .col-name,
+        td.col-name {
+            text-align: left;
+        }
+
+        .col-ping,
+        td.col-ping {
+            text-align: center;
+        }
+
+        .col-steamid,
+        td.col-steamid {
+            text-align: right;
+        }
+
+        .col-actions,
+        td.col-actions {
+            text-align: right;
+        }
+
+        /* === BUTTON STYLES (PRESERVED) === */
+        .action-btns {
+            display: flex;
+            justify-content: flex-start;
+            gap: 8px;
+        }
+
+        .action-btn {
+            position: relative;
+            overflow: hidden;
+            background-color: rgba(21, 20, 27, 0.8);
+            color: #f0f0f0;
+            border: 1px solid #2f2f32;
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: background-color 0.2s ease, transform 0.1s ease, border-color 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background-color: rgba(33, 34, 45, 1);
+            border-color: #38bdf8;
+            transform: translateY(-2px);
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+            background-color: rgba(10, 12, 15, 1);
+            border-color: #2f2f32;
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.7);
+            animation: ripple-animation 0.6s linear forwards;
+            transform: scale(0);
+            pointer-events: none;
+        }
+
+        @keyframes ripple-animation {
+            from {
+                transform: scale(0);
+                opacity: 1;
+            }
+
+            to {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
+        /* === ANNOUNCEMENT (PRESERVED) === */
+        .announcement-box {
+            background: rgba(10, 12, 15, 0.8);
+            border: 1px solid #282830;
+            padding: 16px 20px;
+            border-radius: 6px;
+            margin-top: 20px;
+            color: #fff;
+        }
+
+        .announcement-box label {
+            font-weight: 600;
+            font-size: 1.1em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .announcement-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        #announce-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #282830;
+            border-radius: 4px;
+            background: rgba(3, 4, 19, 0.85);
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 15px;
+            outline: none;
+            transition: box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        #announce-input:focus {
+            box-shadow: 0 0 6px rgba(27, 199, 251, 0.5);
+            border-color: #1bc7fb;
+        }
+
+        #announce-send-btn {
+            background: #1bc7fb;
+            color: #000;
+            font-weight: 700;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        #announce-send-btn:hover {
+            background: #17aee0;
+        }
+
+        #announce-send-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* === STATUS BOX & VEHICLE TABS (PRESERVED) === */
+        .status-box {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            color: #fff;
+            font-weight: 500;
+            font-size: 0.9em;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .status-running {
+            background-color: #4caf50;
+        }
+
+        .status-stopped {
+            background-color: #f44336;
+        }
+
+        /* === VEHICLE SUB-TABS === */
+        .vehicle-tab-bar {
+            display: flex;
+            background-color: rgba(10, 12, 15, 0.6);
+            border-bottom: 1px solid #282830;
+            margin-top: 20px;
+            margin-bottom: 0;
+            border-radius: 8px 8px 0 0;
+            padding: 0 10px;
+        }
+
+        .vehicle-tab {
+            flex: 0 0 auto;
+            padding: 16px 30px;
+            text-align: center;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: 700;
+            font-size: 13px;
+            color: #71717a;
+            background: transparent;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .vehicle-tab:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .vehicle-tab.active {
+            color: #38bdf8;
+            border-bottom: 3px solid #38bdf8;
+            background: transparent;
+        }
+
+        .preset-btn.active {
+            background-color: #1bc7fb !important;
+            color: black !important;
+        }
+
+        #vehicle-tbody tr:hover {
+            background-color: rgba(27, 199, 251, 0.25);
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+
+        .vehicle-row:hover {
+            background: rgba(255, 255, 255, 0.04);
+            cursor: pointer;
+        }
+
+
+        /* ============================
+           UPDATED CSS (UI & LAYOUT)
+           ============================ */
+
+        /* === OVERLAY & WINDOW === */
+        .resource-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .resource-window {
+            display: flex;
+            flex-direction: column;
+            width: 1600px;
+            height: 85vh;
+            max-height: 900px;
+            max-width: 95%;
+            padding: 0;
+            background-color: rgba(3, 4, 19);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #282830;
+        }
+
+        .resource-window::before {
+            display: none;
+        }
+
+        /* OLD TAB BAR (now top bar nav) */
+        .top-nav-bar {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            background-color: rgba(33, 34, 45);
+            border-bottom: 1px solid #282830;
+            color: #e0e0e0;
+            flex-shrink: 0;
+            border-radius: 5px 5px 0 0;
+            padding: 10px 20px;
+        }
+
+        /* The main navigation tabs */
+        .top-nav-tabs {
+            display: flex;
+            margin-right: 20px;
+            background-color: rgba(10, 12, 15);
+            gap: 20px;
+            border-radius: 8px;
+            padding: 5px 10px;
+        }
+
+        .top-nav-tabs .tab {
+            width: auto;
+            height: 40px;
+            padding: 0 15px;
+            font-size: 16px;
+            border-radius: 8px;
+            box-shadow: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #a1a1aa;
+            text-transform: uppercase;
+            font-weight: 500;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .top-nav-tabs .tab.active {
+            background-color: rgba(21, 20, 27);
+            color: white;
+            box-shadow: none;
+            border-bottom: 1px solid #ffffff;
+            border-radius: 8px;
+            font-weight: 700;
+        }
+
+        .top-nav-tabs .tab:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+            color: white;
+        }
+
+
+        /* === SECTIONS (Content area below top bar) === */
+        .sections-container {
+            flex: 1;
+            display: flex;
+            height: calc(100% - 60px);
+            position: relative;
+        }
+
+        .section {
+            display: none;
+            flex: 1;
+            height: 100%;
+            overflow-y: auto;
+            padding: 40px;
+            box-sizing: border-box;
+            background-color: rgba(3, 4, 19);
+            color: #e0e0e0;
+            border-radius: 0 0 24px 24px;
+        }
+
+        .section h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-top: 0;
+            margin-bottom: 25px;
+            letter-spacing: 0.5px;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============================
+           CUSTOM SCROLLBAR STYLING
+           ============================ */
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3f3f46;
+            border-radius: 3px;
+            transition: background 0.2s;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #38bdf8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: transparent;
+        }
+
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #3f3f46 transparent;
+        }
+
+        /* === POPUP OVERLAY (The backdrop) === */
+        #rotation-popup {
+            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.6) !important;
+            z-index: 5000 !important;
+        }
+
+        /* === POPUP WINDOW (The box itself) === */
+        #rotation-popup>div {
+            background-color: #141416 !important;
+            border: 1px solid #2f2f32 !important;
+            border-radius: 16px !important;
+            padding: 30px !important;
+            min-width: 400px !important;
+            box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.9),
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset !important;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #rotation-popup>div::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #38bdf8, transparent);
+        }
+
+        #rotation-popup h3 {
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px !important;
+        }
+
+        #popup-model {
+            color: #38bdf8 !important;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 14px !important;
+            font-weight: 500;
+            margin-bottom: 25px !important;
+            opacity: 1 !important;
+        }
+
+        #rotation-popup label {
+            color: #a1a1aa;
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 8px !important;
+        }
+
+        #rotation-popup input {
+            background-color: #09090b !important;
+            border: 1px solid #2f2f32 !important;
+            color: white !important;
+            padding: 10px !important;
+            border-radius: 6px !important;
+            text-align: center;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        #rotation-popup input:focus {
+            border-color: #38bdf8 !important;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+        }
+
+        .preset-btn {
+            background-color: #27272a !important;
+            color: #a1a1aa !important;
+            border: 1px solid #3f3f46 !important;
+            font-weight: 600 !important;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            background-color: #3f3f46 !important;
+            color: white !important;
+        }
+
+        .preset-btn.active {
+            background-color: #38bdf8 !important;
+            color: #000 !important;
+            border-color: #38bdf8 !important;
+        }
+
+        #confirm-rot {
+            background-color: #38bdf8 !important;
+            color: #09090b !important;
+            font-weight: 800 !important;
+            border: none !important;
+            flex: 1;
+        }
+
+        #confirm-rot:hover {
+            background-color: #0ea5e9 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+        }
+
+        #cancel-rot {
+            background-color: transparent !important;
+            border: 1px solid #ef4444 !important;
+            color: #ef4444 !important;
+            flex: 1;
+        }
+
+        #cancel-rot:hover {
+            background-color: #ef4444 !important;
+            color: white !important;
+        }
+
+        /* === VEHICLE PREVIEW POPUP === */
+        #vehicle-preview-popup {
+            position: fixed;
+            top: 25%;
+            left: 10%;
+            transform: translate(-50%, -50%) scale(0.9);
+            z-index: 5000;
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid #2f2f32;
+            border-radius: 16px;
+            padding: 12px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8),
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
+        }
+
+        #vehicle-preview-popup::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #38bdf8, transparent);
+            z-index: 10;
+        }
+
+        #preview-image {
+            max-width: 440px;
+            max-height: 280px;
+            display: block;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            background-color: #000;
+        }
+
+        /* === NEW TOP BAR STYLES === */
+        .search-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            margin: 0 20px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            max-width: 500px;
+            padding: 8px 12px;
+            border: 1px solid #282830;
+            border-radius: 5px;
+            background-color: rgba(10, 12, 15, 0.8);
+            color: #e0e0e0;
+            font-family: 'Rajdhani', sans-serif;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .search-input:focus {
+            border-color: #38bdf8;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+        }
+
+        .privilege-level {
+            font-size: 16px;
+            font-weight: 600;
+            color: #a1a1aa;
+            white-space: nowrap;
+        }
+
+        .privilege-level span {
+            color: #38bdf8;
+            margin-left: 5px;
+        }
+
+        /* ============================
+           LOOT TAB STYLES
+           ============================ */
+
+        /* Tier stat cards row */
+        .loot-tier-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .loot-tier-card {
+            background: rgba(10, 12, 15, 0.8);
+            border: 1px solid #282830;
+            border-radius: 8px;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .loot-tier-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .loot-tier-card:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Tier accent colors */
+        .loot-tier-card[data-tier="1"]::before {
+            background: linear-gradient(90deg, transparent, #6b7280, transparent);
+        }
+
+        .loot-tier-card[data-tier="2"]::before {
+            background: linear-gradient(90deg, transparent, #10b981, transparent);
+        }
+
+        .loot-tier-card[data-tier="3"]::before {
+            background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+        }
+
+        .loot-tier-card[data-tier="4"]::before {
+            background: linear-gradient(90deg, transparent, #f59e0b, transparent);
+        }
+
+        .loot-tier-card[data-tier="1"] {
+            border-color: #3f4046;
+        }
+
+        .loot-tier-card[data-tier="2"] {
+            border-color: #064e3b;
+        }
+
+        .loot-tier-card[data-tier="3"] {
+            border-color: #1e3a5f;
+        }
+
+        .loot-tier-card[data-tier="4"] {
+            border-color: #78350f;
+        }
+
+        .loot-tier-card:hover[data-tier="1"] {
+            border-color: #6b7280;
+        }
+
+        .loot-tier-card:hover[data-tier="2"] {
+            border-color: #10b981;
+        }
+
+        .loot-tier-card:hover[data-tier="3"] {
+            border-color: #3b82f6;
+        }
+
+        .loot-tier-card:hover[data-tier="4"] {
+            border-color: #f59e0b;
+        }
+
+        .loot-tier-card-label {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #71717a;
+        }
+
+        .loot-tier-card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #e4e4e7;
+            letter-spacing: 0.3px;
+        }
+
+        .loot-tier-card-count {
+            font-size: 36px;
+            font-weight: 700;
+            line-height: 1;
+            margin-top: 4px;
+        }
+
+        .loot-tier-card[data-tier="1"] .loot-tier-card-count {
+            color: #9ca3af;
+        }
+
+        .loot-tier-card[data-tier="2"] .loot-tier-card-count {
+            color: #10b981;
+        }
+
+        .loot-tier-card[data-tier="3"] .loot-tier-card-count {
+            color: #3b82f6;
+        }
+
+        .loot-tier-card[data-tier="4"] .loot-tier-card-count {
+            color: #f59e0b;
+        }
+
+        .loot-tier-card-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 32px;
+            opacity: 0.08;
+        }
+
+        .loot-tier-card[data-tier="1"] .loot-tier-card-icon {
+            color: #9ca3af;
+        }
+
+        .loot-tier-card[data-tier="2"] .loot-tier-card-icon {
+            color: #10b981;
+        }
+
+        .loot-tier-card[data-tier="3"] .loot-tier-card-icon {
+            color: #3b82f6;
+        }
+
+        .loot-tier-card[data-tier="4"] .loot-tier-card-icon {
+            color: #f59e0b;
+        }
+
+        /* Loot table tier badge */
+        .tier-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tier-badge[data-tier="1"] {
+            background: rgba(107, 114, 128, 0.15);
+            color: #9ca3af;
+            border: 1px solid rgba(107, 114, 128, 0.3);
+        }
+
+        .tier-badge[data-tier="2"] {
+            background: rgba(16, 185, 129, 0.12);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .tier-badge[data-tier="3"] {
+            background: rgba(59, 130, 246, 0.12);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .tier-badge[data-tier="4"] {
+            background: rgba(245, 158, 11, 0.12);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        /* Loot table header row */
+        .loot-table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0;
+        }
+
+        .loot-table-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #e4e4e7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 0;
+        }
+
+        .loot-refresh-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #loot-total-count {
+            font-size: 13px;
+            color: #71717a;
+            font-weight: 500;
+        }
+
+        #loot-map-container:active {
+            cursor: grabbing;
+        }
+
+        .loot-map-pin {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            z-index: 10;
+        }
+
+        .loot-map-pin:hover {
+            transform: translate(-50%, -50%) scale(1.8);
+            z-index: 20;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="resource-overlay" id="resource-overlay">
+        <div class="resource-window">
+
+            <!-- === TOP NAVIGATION BAR === -->
+            <div class="top-nav-bar">
+
+                <!-- NAVIGATION TABS -->
+                <div class="top-nav-tabs">
+                    <div class="tab active" data-tab="resources" title="Resources">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <div class="tab" data-tab="players" title="Players">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div class="tab" data-tab="server" title="Server">
+                        <i class="fa-solid fa-server"></i>
+                    </div>
+                    <div class="tab" data-tab="vehicles" title="Vehicles">
+                        <i class="fa-solid fa-car"></i>
+                    </div>
+                    <div class="tab" data-tab="loot" title="Loot">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                    <div class="tab" data-tab="map" title="Map">
+                        <i class="fa-solid fa-map"></i>
+                    </div>
+                </div>
+
+                <!-- SEARCH BAR -->
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Search...">
+                </div>
+
+                <!-- PRIVILEGE LEVEL -->
+                <div class="privilege-level">
+                    Privilege: <span>Admin</span>
+                </div>
+            </div>
+
+            <!-- SECTIONS -->
+            <div class="sections-container">
+                <div id="resources" class="section active">
+                    <h2>Resource manager</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resource-tbody"></tbody>
+                    </table>
+                </div>
+
+                <div id="players" class="section">
+                    <h2>Online Players</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="col-name">Name</th>
+                                <th class="col-ping">Ping</th>
+                                <th class="col-steamid">SteamID</th>
+                                <th class="col-actions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div id="server" class="section">
+                    <h2>Server Info</h2>
+                    <p>Coming soon...</p>
+                    <div class="announcement-box">
+                        <label for="announce-input">Server Announcement</label>
+                        <div class="announcement-row">
+                            <input type="text" id="announce-input" placeholder="Type announcement text..." />
+                            <button id="announce-send-btn">Send</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="map" class="section">
+                    <h2>Map Settings</h2>
+                    <div
+                        style="display:flex; align-items:center; gap:12px; padding:16px 20px; background:rgba(10,12,15,0.8); border:1px solid #282830; border-radius:8px;">
+                        <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                            <input type="checkbox" id="map-admin-toggle"
+                                style="width:16px; height:16px; accent-color:#38bdf8; cursor:pointer;">
+                            <span
+                                style="font-size:14px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:#e4e4e7;">Enable
+                                Admin Draw Mode</span>
+                        </label>
+                        <span style="font-size:12px; color:#52525b;">Enables zone drawing, text labels, export and
+                            delete on the world map</span>
+                    </div>
+                </div>
+
+                <!-- === VEHICLES TAB === -->
+                <div id="vehicles" class="section">
+                    <h2>Vehicle Spawner</h2>
+
+                    <div class="vehicle-tab-bar" style="margin-top:10px;">
+                        <div class="vehicle-tab active" data-subtab="land">Land</div>
+                        <div class="vehicle-tab" data-subtab="air">Air</div>
+                        <div class="vehicle-tab" data-subtab="water">Water</div>
+                    </div>
+
+                    <div
+                        style="max-height:800px;overflow-y:auto;margin-top:15px; border:1px solid #282830;border-radius:6px;">
+                        <table style="width:100%;border-collapse:collapse;">
+                            <thead>
+                                <tr>
+                                    <th style="background-color:rgba(33,34,45,1);text-align:left;padding:10px;">Model
+                                    </th>
+                                    <th style="background-color:rgba(33,34,45,1);text-align:left;padding:10px;">Category
+                                    </th>
+                                    <th style="background-color:rgba(33,34,45,1);text-align:left;padding:10px;">Limit
+                                    </th>
+                                    <th style="background-color:rgba(33,34,45,1);text-align:left;padding:10px;">respawn
+                                        time</th>
+                                    <th style="background-color:rgba(33,34,45,1);text-align:left;padding:10px;">buy
+                                        price</th>
+                                    <th style="background-color:rgba(33,34,45,1);text-align:left;padding:10px;">steal
+                                        price</th>
+                                    <th style="background-color:rgba(33,34,45,1);text-align:left;padding:10px;">Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="vehicle-tbody"></tbody>
+                        </table>
+                    </div>
+
+                    <div id="vehicle-preview-popup">
+                        <div class="preview-glow"></div>
+                        <img id="preview-image" alt="Vehicle Preview">
+                    </div>
+
+                    <h3 style="margin-top:25px;">Spawned This Session</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Model</th>
+                                <th>Spawner</th>
+                                <th>Position</th>
+                                <th>Rotation</th>
+                                <th>Category</th>
+                                <th>NetId</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="spawned-tbody"></tbody>
+                    </table>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top:25px;">
+                        <h3>Saved in Database</h3>
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <span id="saved-count" style="opacity:0.8; font-size:14px;">0 entries</span>
+                            <button id="refresh-db" class="action-btn">Refresh</button>
+                        </div>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Model</th>
+                                <th>Spawned By</th>
+                                <th>Position</th>
+                                <th>Rotation</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="saved-tbody"></tbody>
+                    </table>
+                </div>
+
+                <!-- === LOOT TAB === -->
+                <div id="loot" class="section">
+                    <h2>Loot Manager</h2>
+
+                    <button id="loot-map-btn" class="action-btn"
+                        style="margin-bottom:20px; border-color:rgba(56,189,248,0.4); color:#38bdf8;">
+                        <i class="fa-solid fa-map" style="margin-right:6px; font-size:11px;"></i>Show Map
+                    </button>
+
+
+                    <div style="
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    padding: 14px 18px;
+    background: rgba(10,12,15,0.8);
+    border: 1px solid #282830;
+    border-radius: 8px;
+">
+                        <span style="
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #71717a;
+        white-space: nowrap;
+        margin-right: 4px;
+    ">Place Spawn:</span>
+
+                        <button class="action-btn loot-place-btn" data-tier="1"
+                            style="border-color: rgba(107,114,128,0.4); color: #9ca3af;">
+                            <i class="fa-solid fa-box" style="margin-right: 5px; font-size: 11px;"></i>T1 · Common
+                        </button>
+
+                        <button class="action-btn loot-place-btn" data-tier="2"
+                            style="border-color: rgba(16,185,129,0.4); color: #10b981;">
+                            <i class="fa-solid fa-box-open" style="margin-right: 5px; font-size: 11px;"></i>T2 ·
+                            Uncommon
+                        </button>
+
+                        <button class="action-btn loot-place-btn" data-tier="3"
+                            style="border-color: rgba(59,130,246,0.4); color: #3b82f6;">
+                            <i class="fa-solid fa-gem" style="margin-right: 5px; font-size: 11px;"></i>T3 · Rare
+                        </button>
+
+                        <button class="action-btn loot-place-btn" data-tier="4"
+                            style="border-color: rgba(245,158,11,0.4); color: #f59e0b;">
+                            <i class="fa-solid fa-crown" style="margin-right: 5px; font-size: 11px;"></i>T4 · Epic
+                        </button>
+
+                        <span id="loot-place-status" style="
+        margin-left: auto;
+        font-size: 13px;
+        font-weight: 600;
+        color: #71717a;
+        transition: color 0.3s ease;
+    "></span>
+                    </div>
+
+                    <!-- Tier Summary Cards -->
+                    <div class="loot-tier-cards">
+                        <div class="loot-tier-card" data-tier="1">
+                            <i class="fa-solid fa-box loot-tier-card-icon"></i>
+                            <div class="loot-tier-card-label">Tier 1</div>
+                            <div class="loot-tier-card-title">Common</div>
+                            <div class="loot-tier-card-count" id="loot-count-tier1">0</div>
+                        </div>
+                        <div class="loot-tier-card" data-tier="2">
+                            <i class="fa-solid fa-box-open loot-tier-card-icon"></i>
+                            <div class="loot-tier-card-label">Tier 2</div>
+                            <div class="loot-tier-card-title">Uncommon</div>
+                            <div class="loot-tier-card-count" id="loot-count-tier2">0</div>
+                        </div>
+                        <div class="loot-tier-card" data-tier="3">
+                            <i class="fa-solid fa-gem loot-tier-card-icon"></i>
+                            <div class="loot-tier-card-label">Tier 3</div>
+                            <div class="loot-tier-card-title">Rare</div>
+                            <div class="loot-tier-card-count" id="loot-count-tier3">0</div>
+                        </div>
+                        <div class="loot-tier-card" data-tier="4">
+                            <i class="fa-solid fa-crown loot-tier-card-icon"></i>
+                            <div class="loot-tier-card-label">Tier 4</div>
+                            <div class="loot-tier-card-title">Legendary</div>
+                            <div class="loot-tier-card-count" id="loot-count-tier4">0</div>
+                        </div>
+                    </div>
+
+                    <!-- Loot Spawns Table -->
+                    <div class="loot-table-header">
+                        <h3>All Loot Spawns</h3>
+                        <div class="loot-refresh-btn">
+                            <span id="loot-total-count">0 entries</span>
+                            <button id="loot-refresh-btn" class="action-btn">Refresh</button>
+                        </div>
+                    </div>
+
+                    <div style="border:1px solid #282830;border-radius:6px;margin-top:12px;overflow:hidden;">
+                        <table style="margin-top:0;">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Tier</th>
+                                    <th>Spawned By</th>
+                                    <th>Position</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="loot-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- === ROTATION POPUP === -->
+                <div id="rotation-popup" style="display:none;
+                    position:fixed;top:0;left:0;width:100%;height:100%;
+                    background:rgba(0,0,0,0.6);z-index:2000;
+                    justify-content:center;align-items:center;">
+
+                    <div style="background-color:rgba(10,12,15,0.95);
+                        border:1px solid #282830;
+                        border-radius:8px;padding:20px;min-width:360px;text-align:center;">
+
+                        <h3 style="margin-top:0;">Spawn Vehicle</h3>
+                        <p id="popup-model" style="margin:0 0 12px 0;opacity:0.8;font-size:15px;"></p>
+
+                        <div id="preset-row" style="margin-bottom:15px;">
+                            <label style="display:block;margin-bottom:6px;font-weight:600;">Quick Rotations:</label>
+                            <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;">
+                                <button class="preset-btn action-btn" data-x="0" data-y="0" data-z="0">0,0,0</button>
+                                <button class="preset-btn action-btn" data-x="0" data-y="90" data-z="0">0,90,0</button>
+                                <button class="preset-btn action-btn" data-x="0" data-y="180"
+                                    data-z="0">0,180,0</button>
+                                <button class="preset-btn action-btn" data-x="0" data-y="270"
+                                    data-z="0">0,270,0</button>
+                                <button class="preset-btn action-btn" data-x="45" data-y="0" data-z="0">45,0,0</button>
+                            </div>
+                        </div>
+
+                        <label style="display:block;margin-bottom:4px;font-weight:600;">Custom Rotation:</label>
+                        <div style="display:flex;gap:8px;justify-content:center;margin-bottom:15px;">
+                            <input id="rot-x" type="number" placeholder="Rot X" style="width:80px;padding:6px;">
+                            <input id="rot-y" type="number" placeholder="Rot Y" style="width:80px;padding:6px;">
+                            <input id="rot-z" type="number" placeholder="Rot Z" style="width:80px;padding:6px;">
+                        </div>
+
+                        <div style="display:flex;gap:10px;justify-content:center;">
+                            <button id="cancel-rot" class="action-btn">Cancel</button>
+                            <button id="confirm-rot" class="action-btn">Spawn</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="loot-map-overlay" style="
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.1);
+    z-index: 4000;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+">
+                    <div id="loot-map-popup" style="
+        width: 85vw;
+        height: 80vh;
+        max-width: 1500px;
+        max-height: 1000px;
+        background: rgba(3,4,19,1);
+        border: 1px solid #282830;
+        border-radius: 12px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 40px 80px rgba(0,0,0,0.8);
+        pointer-events: all;
+        position: relative;
+        resize: both;
+        min-width: 600px;
+        min-height: 400px;
+    ">
+                        <div style="
+        width: 85vw;
+        height: 80vh;
+        max-width: 1500px;
+        max-height: 1000px;
+        background: rgba(3,4,19,1);
+        border: 1px solid #282830;
+        border-radius: 12px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 40px 80px rgba(0,0,0,0.8);
+    ">
+                            <!-- Header -->
+                            <div style="display:flex; align-items:center; justify-content:space-between;
+                    padding:16px 24px; border-bottom:1px solid #282830;
+                    background:rgba(10,12,15,0.9); flex-shrink:0;">
+                                <div style="display:flex; align-items:center; gap:16px;">
+                                    <span style="font-size:16px; font-weight:800; text-transform:uppercase;
+                             letter-spacing:1px; color:white;">Loot Spawn Map</span>
+                                    <span id="map-spawn-count" style="font-size:12px; color:#71717a;"></span>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:12px;">
+                                    <!-- Legend -->
+                                    <div
+                                        style="display:flex; gap:12px; align-items:center; font-size:12px; font-weight:600;">
+                                        <span style="display:flex;align-items:center;gap:4px;">
+                                            <span
+                                                style="width:10px;height:10px;border-radius:50%;background:#9ca3af;display:inline-block;box-shadow:0 0 4px #9ca3af;"></span>T1
+                                        </span>
+                                        <span style="display:flex;align-items:center;gap:4px;">
+                                            <span
+                                                style="width:10px;height:10px;border-radius:50%;background:#10b981;display:inline-block;box-shadow:0 0 4px #10b981;"></span>T2
+                                        </span>
+                                        <span style="display:flex;align-items:center;gap:4px;">
+                                            <span
+                                                style="width:10px;height:10px;border-radius:50%;background:#3b82f6;display:inline-block;box-shadow:0 0 4px #3b82f6;"></span>T3
+                                        </span>
+                                        <span style="display:flex;align-items:center;gap:4px;">
+                                            <span
+                                                style="width:10px;height:10px;border-radius:50%;background:#f59e0b;display:inline-block;box-shadow:0 0 4px #f59e0b;"></span>T4
+                                        </span>
+                                    </div>
+                                    <!-- Filters -->
+                                    <!-- Filters -->
+                                    <div style="display:flex; gap:8px; align-items:center;">
+                                        <button class="action-btn map-filter-btn active-filter" data-filter="all"
+                                            style="font-size:11px; padding:4px 10px;">All</button>
+                                        <button class="action-btn map-filter-btn" data-filter="1"
+                                            style="font-size:11px; padding:4px 10px; color:#9ca3af; border-color:rgba(156,163,175,0.4);">T1</button>
+                                        <button class="action-btn map-filter-btn" data-filter="2"
+                                            style="font-size:11px; padding:4px 10px; color:#10b981; border-color:rgba(16,185,129,0.4);">T2</button>
+                                        <button class="action-btn map-filter-btn" data-filter="3"
+                                            style="font-size:11px; padding:4px 10px; color:#3b82f6; border-color:rgba(59,130,246,0.4);">T3</button>
+                                        <button class="action-btn map-filter-btn" data-filter="4"
+                                            style="font-size:11px; padding:4px 10px; color:#f59e0b; border-color:rgba(245,158,11,0.4);">T4</button>
+
+                                        <div style="width:1px; height:20px; background:#282830; margin:0 4px;"></div>
+
+                                        <button class="action-btn map-filter-btn" data-filter="db"
+                                            style="font-size:11px; padding:4px 10px; color:#a78bfa; border-color:rgba(167,139,250,0.4);">
+                                            <i class="fa-solid fa-database"
+                                                style="margin-right:4px; font-size:10px;"></i>DB Spawns
+                                        </button>
+                                        <button class="action-btn map-filter-btn" data-filter="world"
+                                            style="font-size:11px; padding:4px 10px; color:#fb923c; border-color:rgba(251,146,60,0.4);">
+                                            <i class="fa-solid fa-globe"
+                                                style="margin-right:4px; font-size:10px;"></i>World Spawns
+                                        </button>
+                                    </div>
+                                    <button id="loot-map-close" class="action-btn"
+                                        style="border-color:rgba(239,68,68,0.4);color:#f87171;">
+                                        <i class="fa-solid fa-xmark" style="margin-right:5px;"></i>Close
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Map Container -->
+                            <div id="loot-map-container" style="
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            cursor: grab;
+        ">
+                                <div id="loot-map-world" style="
+                position: absolute;
+                width: 10000px;
+                height: 10000px;
+                transform-origin: 0 0;
+                will-change: transform;
+            ">
+                                    <img src="map.png"
+                                        style="width:100%; height:100%; display:block; filter:grayscale(30%) brightness(0.8);">
+                                    <div id="loot-map-pins"></div>
+                                </div>
+                            </div>
+
+                            <!-- Tooltip -->
+                            <div id="map-pin-tooltip" style="
+            display: none;
+            position: fixed;
+            background: rgba(10,12,15,0.95);
+            border: 1px solid #282830;
+            border-radius: 6px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #e4e4e7;
+            pointer-events: none;
+            z-index: 5000;
+            min-width: 160px;
+        "></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script type="module">
+        import { jc4mp } from './jc4mp.js';
+        let currentRole = "admin";
+
+        document.addEventListener("keydown", event => {
+            if (event.key !== "F2") return;
+            if (event.repeat) return;
+
+            event.preventDefault();
+            event.stopPropagation();
+            jc4mp.sendMessage("dashboard_close_request", {});
+        }, true);
+
+        jc4mp.on("set_role", (data) => {
+            currentRole = data.role || "admin";
+
+            // Update privilege label
+            const privilegeSpan = document.querySelector(".privilege-level span");
+            if (privilegeSpan) {
+                if (currentRole === "moderator") {
+                    privilegeSpan.textContent = "Moderator";
+                    privilegeSpan.style.color = "#a78bfa"; // purple to distinguish from admin
+                } else {
+                    privilegeSpan.textContent = "Admin";
+                    privilegeSpan.style.color = "#38bdf8"; // default cyan
+                }
+            }
+
+            applyRoleRestrictions(currentRole);
+        });
+
+        function applyRoleRestrictions(role) {
+            if (role !== "moderator") return; // admin/owner sees everything
+
+            // Hide tabs: resources, players, server, map
+            ["resources", "players", "server", "map"].forEach(tabName => {
+                const tab = document.querySelector(`.tab[data-tab="${tabName}"]`);
+                if (tab) tab.style.display = "none";
+            });
+
+            // Hide the Show Map button in loot tab
+            const lootMapBtn = document.getElementById("loot-map-btn");
+            if (lootMapBtn) lootMapBtn.style.display = "none";
+
+            // Switch to vehicles tab as default
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            const vehicleTab = document.querySelector('.tab[data-tab="vehicles"]');
+            const vehicleSection = document.getElementById("vehicles");
+            if (vehicleTab) vehicleTab.classList.add('active');
+            if (vehicleSection) vehicleSection.classList.add('active');
+        }
+        const clickSound = new Audio('click.mp3');
+        const hoverSound = new Audio('hover.mp3');
+
+        // ==== VEHICLE SYSTEM ====
+        const vehicleTbody = document.getElementById("vehicle-tbody");
+        const popup = document.getElementById("rotation-popup");
+        const popupModel = document.getElementById("popup-model");
+
+        const previewPopup = document.getElementById("vehicle-preview-popup");
+        const previewImage = document.getElementById("preview-image");
+
+        document.addEventListener("mouseover", (e) => {
+            const row = e.target.closest("tr");
+            if (!row) return;
+            if (!row.parentElement || row.parentElement.id !== "vehicle-tbody") return;
+            const id = row.dataset.id;
+            if (!id) return;
+            const imgPath = `https://cdn.shopify.com/s/files/1/0974/0661/5889/files/${id}.webp`;
+            previewImage.src = imgPath;
+            previewPopup.style.opacity = "1";
+            previewPopup.style.pointerEvents = "auto";
+            previewPopup.style.transform = "translate(-50%, -50%) scale(1)";
+        });
+
+        document.addEventListener("mouseout", (e) => {
+            const row = e.target.closest("tr");
+            if (!row) return;
+            if (!row.parentElement || row.parentElement.id !== "vehicle-tbody") return;
+            previewPopup.style.opacity = "0";
+            previewPopup.style.pointerEvents = "none";
+            previewPopup.style.transform = "translate(-50%, -50%) scale(0.9)";
+        });
+
+        previewImage.onerror = () => {
+            previewImage.src = "https://cdn.shopify.com/s/files/1/0974/0661/5889/files/default.webp";
+        };
+
+        const cancelRot = document.getElementById("cancel-rot");
+        const confirmRot = document.getElementById("confirm-rot");
+        let currentVehicle = null;
+        let currentCategory = "land";
+        let VEHICLES = [];
+
+        document.querySelectorAll('.vehicle-tab').forEach(tab => {
+            tab.addEventListener('click', e => {
+                e.stopPropagation();
+                document.querySelectorAll('.vehicle-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentCategory = tab.dataset.subtab;
+                renderVehicleList();
+            });
+        });
+
+        function renderVehicleList() {
+            vehicleTbody.innerHTML = "";
+            const filtered = VEHICLES.filter(v => v.category === currentCategory);
+            if (filtered.length === 0) {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td colspan="7" style="text-align:center;opacity:0.7;">No vehicles in this category.</td>`;
+                vehicleTbody.appendChild(tr);
+                return;
+            }
+            filtered.forEach(v => {
+                const tr = document.createElement("tr");
+                tr.classList.add("vehicle-row");
+                tr.dataset.id = v.id;
+                tr.innerHTML = `
+                    <td>${v.model}</td>
+                    <td>${v.category}</td>
+                    <td>${v.limit || "-"}</td>
+                    <td>${v.respawn_time}s</td>
+                    <td>${v.price}</td>
+                    <td>${v.steal_price}</td>
+                    <td></td>
+                `;
+                const lastTd = tr.querySelector("td:last-child");
+                const spawnBtn = document.createElement("button");
+                spawnBtn.className = "action-btn";
+                spawnBtn.textContent = "Spawn";
+                spawnBtn.onclick = () => openPopup(v);
+                lastTd.appendChild(spawnBtn);
+                vehicleTbody.appendChild(tr);
+            });
+        }
+
+        function openPopup(vehicle) {
+            currentVehicle = vehicle;
+            popup.style.display = "flex";
+            popupModel.textContent = `${vehicle.model} (${vehicle.category})`;
+            rotX.value = rotY.value = rotZ.value = "";
+        }
+
+        cancelRot.onclick = () => { popup.style.display = "none"; };
+
+        confirmRot.onclick = () => {
+            if (!currentVehicle) return;
+            const rotation = {
+                x: parseFloat(rotX.value) || 0,
+                y: parseFloat(rotY.value) || 0,
+                z: parseFloat(rotZ.value) || 0
+            };
+            jc4mp.sendMessage("vehicle_spawn_request", {
+                id: currentVehicle.id,
+                model: currentVehicle.model,
+                category: currentVehicle.category,
+                rotation
+            });
+            popup.style.display = "none";
+        };
+
+        const rotX = document.getElementById("rot-x");
+        const rotY = document.getElementById("rot-y");
+        const rotZ = document.getElementById("rot-z");
+
+        document.querySelectorAll(".preset-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                rotX.value = parseFloat(btn.dataset.x) || 0;
+                rotY.value = parseFloat(btn.dataset.y) || 0;
+                rotZ.value = parseFloat(btn.dataset.z) || 0;
+                btn.classList.add("active");
+                setTimeout(() => btn.classList.remove("active"), 200);
+            });
+        });
+
+        jc4mp.on("vehicle_spawnlist", data => {
+            if (!data || !Array.isArray(data.vehicles)) return;
+            VEHICLES = data.vehicles.map(v => {
+                let cat = v.category.toLowerCase().trim();
+                if (cat.includes("land")) cat = "land";
+                else if (cat.includes("water") || cat.includes("sea")) cat = "water";
+                else if (cat.includes("air")) cat = "air";
+                else cat = "other";
+                return {
+                    id: v.id,
+                    model: v.model,
+                    category: cat,
+                    limit: Number(v.limit) || 0,
+                    respawn_time: Number(v.respawn_time) || 0,
+                    price: Number(v.price) || 0,
+                    steal_price: Number(v.steal_price) || 0
+                };
+            });
+            renderVehicleList();
+        });
+
+        jc4mp.on("vehicle_spawned_update", data => {
+            const spawnedTbody = document.getElementById("spawned-tbody");
+            if (!spawnedTbody || !data) return;
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${data.model}</td>
+                <td>${data.spawned_by}</td>
+                <td>(${data.pos.x.toFixed(2)}, ${data.pos.y.toFixed(2)}, ${data.pos.z.toFixed(2)})</td>
+                <td>(${data.rot.x.toFixed(1)}, ${data.rot.y.toFixed(1)}, ${data.rot.z.toFixed(1)})</td>
+                <td>${data.category}</td>
+                <td style="opacity:0.7;">${data.netid ?? "?"}</td>
+                <td>
+                    <div class="action-btns">
+                        <button class="action-btn" data-action="waypoint">Waypoint</button>
+                        <button class="action-btn" data-action="delete">Delete</button>
+                        <button class="action-btn" data-action="save">Push to DB</button>
+                    </div>
+                </td>
+            `;
+            tr.querySelectorAll("button").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const action = btn.dataset.action;
+                    if (action === "delete") {
+                        showConfirmPopup(`Delete ${data.model}?`, "Are you sure you want to permanently remove this vehicle?", () => {
+                            jc4mp.sendMessage("vehicle_action_request", { action: "delete", netid: data.netid, id: data.id, model: data.model, pos: data.pos, rot: data.rot, category: data.category, spawned_by: data.spawned_by });
+                        });
+                        return;
+                    }
+                    jc4mp.sendMessage("vehicle_action_request", { action, netid: data.netid, id: data.id, model: data.model, pos: data.pos, rot: data.rot, category: data.category, spawned_by: data.spawned_by });
+                });
+            });
+            spawnedTbody.prepend(tr);
+        });
+
+        function showConfirmPopup(title, message, onConfirm) {
+            const existing = document.getElementById("confirm-popup");
+            if (existing) existing.remove();
+            const popup = document.createElement("div");
+            popup.id = "confirm-popup";
+            popup.style = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 3000;`;
+            popup.innerHTML = `
+                <div style="background:#1d1d1d;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:20px 25px;text-align:center;min-width:340px;">
+                    <h3 style="margin:0 0 10px 0;">${title}</h3>
+                    <p style="opacity:0.8;margin-bottom:20px;">${message}</p>
+                    <div style="display:flex;justify-content:center;gap:12px;">
+                        <button id="confirm-yes" class="action-btn">Yes</button>
+                        <button id="confirm-no" class="action-btn">Cancel</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(popup);
+            popup.querySelector("#confirm-yes").addEventListener("click", () => { popup.remove(); if (typeof onConfirm === "function") onConfirm(); });
+            popup.querySelector("#confirm-no").addEventListener("click", () => popup.remove());
+        }
+
+        jc4mp.on("vehicle_deleted_update", data => {
+            if (!data || !data.netid) return;
+            document.querySelectorAll("#spawned-tbody tr").forEach(row => {
+                const netidCell = row.children[5];
+                if (netidCell?.textContent?.trim() === String(data.netid)) row.remove();
+            });
+        });
+
+        jc4mp.on("vehicle_save_feedback", data => {
+            if (!data) return;
+            const savedTbody = document.getElementById("saved-tbody");
+            if (!savedTbody) return;
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${savedTbody.children.length + 1}</td>
+                <td>${data.model}</td>
+                <td>${data.spawned_by}</td>
+                <td>(${data.pos.x.toFixed(2)}, ${data.pos.y.toFixed(2)}, ${data.pos.z.toFixed(2)})</td>
+                <td>(${data.rot.x.toFixed(1)}, ${data.rot.y.toFixed(1)}, ${data.rot.z.toFixed(1)})</td>
+                <td>${data.saved_at}</td>
+                <td><button class="action-btn" data-action="waypoint" data-x="${data.pos.x}" data-y="${data.pos.y}" data-z="${data.pos.z}">Waypoint</button></td>
+            `;
+            savedTbody.prepend(tr);
+            tr.style.background = "#2e7d32";
+            tr.style.transition = "background 1.5s ease";
+            setTimeout(() => (tr.style.background = ""), 1500);
+            const spawnedTbody = document.getElementById("spawned-tbody");
+            if (!spawnedTbody) return;
+            const targetModel = String(data.model || "").trim();
+            const targetNetId = String(data.netid || "").trim();
+            spawnedTbody.querySelectorAll("tr").forEach(row => {
+                const modelCell = row.children[0];
+                const netidCell = row.children[5];
+                if (modelCell?.textContent?.trim() === targetModel && netidCell?.textContent?.trim() === targetNetId) row.remove();
+            });
+        });
+
+        document.addEventListener("click", e => {
+            const btn = e.target.closest("button[data-action='waypoint']");
+            if (!btn) return;
+            const pos = { x: parseFloat(btn.dataset.x), y: parseFloat(btn.dataset.y), z: parseFloat(btn.dataset.z) };
+            btn.style.background = "#33691e";
+            setTimeout(() => (btn.style.background = ""), 400);
+            jc4mp.sendMessage("vehicle_action_request", { action: "waypoint_db", pos });
+        });
+
+        jc4mp.on("vehicle_list_update", data => {
+            const tbody = document.getElementById("saved-tbody");
+            const count = document.getElementById("saved-count");
+            if (!tbody) return;
+            tbody.innerHTML = "";
+            const list = Array.isArray(data?.vehicles) ? data.vehicles : [];
+            if (count) count.textContent = `${list.length} entr${list.length === 1 ? "y" : "ies"}`;
+            if (list.length === 0) {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td colspan="7" style="text-align:center;opacity:0.6;">No saved vehicles.</td>`;
+                tbody.appendChild(tr);
+                return;
+            }
+            list.forEach((v, i) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${i + 1}</td>
+                    <td>${v.model}</td>
+                    <td>${v.spawned_by}</td>
+                    <td>(${Number(v.pos_x).toFixed(2)}, ${Number(v.pos_y).toFixed(2)}, ${Number(v.pos_z).toFixed(2)})</td>
+                    <td>(${Number(v.rot_x).toFixed(1)}, ${Number(v.rot_y).toFixed(1)}, ${Number(v.rot_z).toFixed(1)})</td>
+                    <td>${v.saved_at}</td>
+                    <td><button class="action-btn" data-action="waypoint" data-x="${v.pos_x}" data-y="${v.pos_y}" data-z="${v.pos_z}">Waypoint</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        });
+
+        document.getElementById("refresh-db")?.addEventListener("click", () => {
+            jc4mp.sendMessage("vehicle_action_request", { action: "refresh_db" });
+            const btn = document.getElementById("refresh-db");
+            btn.textContent = "Refreshing...";
+            btn.disabled = true;
+            setTimeout(() => { btn.textContent = "Refresh"; btn.disabled = false; }, 1500);
+        });
+
+        // === ANNOUNCEMENT ===
+        const announceInput = document.getElementById('announce-input');
+        const announceSendBtn = document.getElementById('announce-send-btn');
+        if (announceInput && announceSendBtn) {
+            announceSendBtn.addEventListener('click', () => {
+                const text = announceInput.value.trim();
+                if (text.length === 0) return;
+                jc4mp.sendMessage('admin_announcement', { text });
+                announceInput.value = '';
+                announceSendBtn.textContent = 'Sent!';
+                announceSendBtn.disabled = true;
+                setTimeout(() => { announceSendBtn.textContent = 'Send'; announceSendBtn.disabled = false; }, 1000);
+            });
+        }
+
+        // === RESOURCE TABLE ===
+        const tbody = document.getElementById('resource-tbody');
+
+        function createActionButton(action, target, type = "resource") {
+            const btn = document.createElement('button');
+            btn.classList.add('action-btn');
+            btn.textContent = action;
+
+            btn.addEventListener('mouseenter', () => {
+                hoverSound.currentTime = 0;
+                hoverSound.play().catch(() => { });
+            });
+
+            btn.addEventListener('click', e => {
+                // Ripple
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                const rect = btn.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+                ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+                btn.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+                clickSound.currentTime = 0;
+                clickSound.play().catch(() => { });
+
+                if (type === "resource") {
+                    jc4mp.sendMessage("resource_action", { resource: target, action });
+
+                } else if (type === "player") {
+                    const steamid = target.steamid;
+                    const name = target.nick;
+
+                    if (action === "Whisper") {
+                        const msg = prompt(`Whisper to ${name}:`);
+                        if (!msg) return;
+                        jc4mp.sendMessage("player_action", { steamid, name, action: "whisper", message: msg });
+
+                    } else if (action === "Kick") {
+                        const reason = prompt(`Kick reason for ${name}:`) || "No reason given";
+                        jc4mp.sendMessage("player_action", { steamid, name, action: "kick", reason });
+
+                    } else if (action === "Ban") {
+                        const reason = prompt(`Ban reason for ${name}:`) || "No reason given";
+                        if (!confirm(`Ban ${name}? This cannot be undone.`)) return;
+                        jc4mp.sendMessage("player_action", { steamid, name, action: "ban", reason });
+
+                    } else if (action === "Set Health") {
+                        const val = prompt(`Set health for ${name} (0-800):`);
+                        const hp = parseFloat(val);
+                        if (isNaN(hp) || hp < 0) return;
+                        jc4mp.sendMessage("player_action", { steamid, name, action: "set_health", value: hp });
+
+                    } else if (action === "Teleport To") {
+                        jc4mp.sendMessage("player_action", { steamid, name, action: "teleport_to" });
+
+                    } else if (action === "Teleport Here") {
+                        jc4mp.sendMessage("player_action", { steamid, name, action: "teleport_to_me" });
+
+                    } else if (action === "Show Inventory") {
+                        jc4mp.sendMessage("player_action", { steamid, name, action: "show_inventory" });
+
+                    } else if (action === "Teleport To Pos") {
+                        const x = parseFloat(prompt(`X coordinate:`));
+                        if (isNaN(x)) return;
+                        const y = parseFloat(prompt(`Y coordinate:`));
+                        if (isNaN(y)) return;
+                        const z = parseFloat(prompt(`Z coordinate:`));
+                        if (isNaN(z)) return;
+                        jc4mp.sendMessage("player_action", { steamid, name, action: "teleport_to_pos", pos: { x, y, z } });
+                    }
+                }
+            });
+
+            return btn;
+        }
+
+        jc4mp.on("show_player_inventory", (data) => {
+            const existing = document.getElementById("inv-popup");
+            if (existing) existing.remove();
+
+            // Parse all rows into stacks grouped by category
+            const categories = { weapons: [], explosives: [], supplies: [], survival: [] };
+
+            (data.inventory || []).forEach(row => {
+                try {
+                    const stack = JSON.parse(row.stack_data);
+                    stack.category = row.category;
+                    stack.slot = row.slot;
+                    if (categories[row.category]) {
+                        categories[row.category].push(stack);
+                    }
+                } catch (e) {
+                    console.error("[AdminInv] Failed to parse stack_data:", e);
+                }
+            });
+
+            function getDurColor(pct) {
+                if (pct < 30) return "#ff4d4d";
+                if (pct < 70) return "#ffaa00";
+                return "#28a745";
+            }
+
+            function getItemBg(name) {
+                if (name === "Wall") return "rgba(88,166,255,0.55)";
+                if (["Military Vest", "Military Helmet"].includes(name)) return "rgba(255,99,71,0.55)";
+                if (name === "Travel Backpack") return "rgba(123,104,238,0.55)";
+                if (["Parachute", "RocketGrapple"].includes(name)) return "rgba(0,191,255,0.55)";
+                if (name === "LandClaim") return "rgba(255,215,0,0.55)";
+                if (name === "C4") return "rgba(255,69,0,0.55)";
+                return "rgba(0,0,0,0.55)";
+            }
+
+            function buildStackEl(stack) {
+                const activeItem = stack.items?.[0];
+                if (!activeItem) return null;
+
+                const stackEl = document.createElement("div");
+                stackEl.style.cssText = `
+            display: flex; flex-direction: column;
+            min-width: 110px; max-width: 140px;
+        `;
+
+                const itemEl = document.createElement("div");
+                itemEl.style.cssText = `
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid ${activeItem.equipped ? "#28a745" : "transparent"};
+            background: ${getItemBg(stack.name)};
+            position: relative;
+            min-height: 50px;
+            cursor: default;
+        `;
+
+                // Equipped indicator
+                if (activeItem.equipped) {
+                    const eq = document.createElement("div");
+                    eq.style.cssText = `
+                position: absolute; top: 5px; left: 5px;
+                width: 10px; height: 10px;
+                background: #28a745; border-radius: 2px;
+            `;
+                    itemEl.appendChild(eq);
+                }
+
+                // Name + quantity
+                const nameEl = document.createElement("div");
+                nameEl.style.cssText = `
+            font-weight: 700; font-size: 13px;
+            color: #e1e7ef; text-align: center; margin-bottom: 4px;
+        `;
+                const count = stack.items?.length || 1;
+                nameEl.textContent = count > 1 ? `${stack.name} (${count})` : stack.name;
+                itemEl.appendChild(nameEl);
+
+                // Durability bar
+                if (activeItem.max_durability && activeItem.durability != null) {
+                    const pct = Math.max(0, Math.min(100, (activeItem.durability / activeItem.max_durability) * 100));
+
+                    const wrap = document.createElement("div");
+                    wrap.style.cssText = `
+                width: calc(100% - 16px); height: 4px;
+                background: rgba(0,0,0,0.3); border-radius: 2px; overflow: hidden; margin-top: 4px;
+            `;
+                    const fill = document.createElement("div");
+                    fill.style.cssText = `
+                height: 100%; border-radius: 2px;
+                width: ${pct}%; background: ${getDurColor(pct)};
+            `;
+                    wrap.appendChild(fill);
+                    itemEl.appendChild(wrap);
+
+                    const durTxt = document.createElement("div");
+                    durTxt.style.cssText = `
+                font-size: 11px; color: #a1a1aa; margin-top: 3px;
+            `;
+                    durTxt.textContent = `${Math.round(activeItem.durability)}/${Math.round(activeItem.max_durability)}`;
+                    itemEl.appendChild(durTxt);
+                }
+
+                stackEl.appendChild(itemEl);
+                return stackEl;
+            }
+
+            // Build category sections HTML container
+            function buildCategorySection(catName, stacks) {
+                if (!stacks || stacks.length === 0) return null;
+
+                const section = document.createElement("div");
+                section.style.cssText = "margin-bottom: 20px;";
+
+                const header = document.createElement("div");
+                header.style.cssText = `
+            font-size: 11px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 1px; color: #71717a;
+            margin-bottom: 8px; padding-bottom: 5px;
+            border-bottom: 1px solid #282830;
+            display: flex; justify-content: space-between;
+        `;
+                header.innerHTML = `<span>${catName}</span><span style="color:#52525b;">${stacks.length} stack${stacks.length !== 1 ? 's' : ''}</span>`;
+                section.appendChild(header);
+
+                const grid = document.createElement("div");
+                grid.style.cssText = "display: flex; flex-wrap: wrap; gap: 8px;";
+
+                stacks.sort((a, b) => (a.slot || 0) - (b.slot || 0)).forEach(stack => {
+                    const el = buildStackEl(stack);
+                    if (el) grid.appendChild(el);
+                });
+
+                section.appendChild(grid);
+                return section;
+            }
+
+            // Overlay
+            const overlay = document.createElement("div");
+            overlay.id = "inv-popup";
+            overlay.style.cssText = `
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.7);
+        display: flex; justify-content: center; align-items: center;
+        z-index: 6000;
+    `;
+
+            // Window
+            const win = document.createElement("div");
+            win.style.cssText = `
+        background: rgba(3,4,19,1);
+        border: 1px solid #282830;
+        border-radius: 8px;
+        width: 740px; max-width: 92vw;
+        max-height: 82vh;
+        display: flex; flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0 40px 80px rgba(0,0,0,0.9);
+    `;
+
+            // Header
+            const hdr = document.createElement("div");
+            hdr.style.cssText = `
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 20px;
+        background: rgba(33,34,45,1);
+        border-bottom: 1px solid #282830;
+        flex-shrink: 0;
+    `;
+            hdr.innerHTML = `
+        <div>
+            <div style="font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:white;">
+                ${data.name}'s Inventory
+            </div>
+            <div style="font-size:11px;color:#52525b;font-family:monospace;margin-top:2px;">${data.steamid}</div>
+        </div>
+    `;
+            const closeBtn = document.createElement("button");
+            closeBtn.className = "action-btn";
+            closeBtn.textContent = "✕ Close";
+            closeBtn.style.cssText = "border-color:rgba(239,68,68,0.4);color:#f87171;";
+            closeBtn.addEventListener("click", () => overlay.remove());
+            hdr.appendChild(closeBtn);
+            win.appendChild(hdr);
+
+            // Body
+            const body = document.createElement("div");
+            body.style.cssText = `
+        flex: 1; overflow-y: auto; padding: 20px;
+        display: flex; flex-direction: column;
+    `;
+            body.style.cssText += `
+        scrollbar-width: thin;
+        scrollbar-color: #3f3f46 transparent;
+    `;
+
+            const totalStacks = Object.values(categories).reduce((s, arr) => s + arr.length, 0);
+            if (totalStacks === 0) {
+                body.innerHTML = `<div style="color:#52525b;text-align:center;padding:40px;font-size:14px;">Inventory is empty.</div>`;
+            } else {
+                Object.entries(categories).forEach(([catName, stacks]) => {
+                    const sec = buildCategorySection(catName, stacks);
+                    if (sec) body.appendChild(sec);
+                });
+            }
+
+            win.appendChild(body);
+            overlay.appendChild(win);
+            document.body.appendChild(overlay);
+
+            // Close on backdrop click
+            overlay.addEventListener("click", e => { if (e.target === overlay) overlay.remove(); });
+        });
+
+        jc4mp.on('update_resource_list', (data) => {
+            tbody.innerHTML = '';
+            if (!data.resources || !data.resources.length) return;
+            data.resources.forEach(res => {
+                const tr = document.createElement('tr');
+                const tdName = document.createElement('td');
+                tdName.textContent = res.name || 'Unknown';
+                tr.appendChild(tdName);
+                const tdStatus = document.createElement('td');
+                const statusBox = document.createElement('div');
+                statusBox.classList.add('status-box', res.status == 1 ? 'status-running' : 'status-stopped');
+                statusBox.textContent = res.status == 1 ? 'Running' : 'Stopped';
+                tdStatus.appendChild(statusBox);
+                tr.appendChild(tdStatus);
+                const tdActions = document.createElement('td');
+                const actionDiv = document.createElement('div');
+                actionDiv.classList.add('action-btns');
+                ['Start', 'Stop', 'Restart'].forEach(action => actionDiv.appendChild(createActionButton(action, res.name)));
+                tdActions.appendChild(actionDiv);
+                tr.appendChild(tdActions);
+                tbody.appendChild(tr);
+            });
+        });
+
+        // === TAB SWITCHING ===
+        const tabs = document.querySelectorAll('.tab');
+        const sections = document.querySelectorAll('.section');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                sections.forEach(s => s.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        // === PLAYER LIST ===
+        const playerTbody = document.querySelector('#players tbody');
+
+        function renderPlayerList(players) {
+            if (!playerTbody) return;
+            playerTbody.innerHTML = '';
+            players.forEach(p => {
+                const tr = document.createElement('tr');
+                const tdName = document.createElement('td');
+                tdName.textContent = p.nick;
+                tdName.classList.add('col-name');
+                tr.appendChild(tdName);
+                const tdPing = document.createElement('td');
+                tdPing.textContent = p.ping;
+                tdPing.classList.add('col-ping');
+                tr.appendChild(tdPing);
+                const tdSteam = document.createElement('td');
+                tdSteam.textContent = p.steamid;
+                tdSteam.classList.add('col-steamid');
+                tr.appendChild(tdSteam);
+                const tdActions = document.createElement('td');
+                tdActions.classList.add('col-actions');
+                const actionDiv = document.createElement('div');
+                actionDiv.classList.add('action-btns');
+                ['Whisper', 'Kick', 'Ban', 'Teleport To', 'Teleport Here', 'Teleport To Pos', 'Set Health', 'Show Inventory'].forEach(action => {
+                    actionDiv.appendChild(createActionButton(action, { steamid: p.steamid, nick: p.nick }, "player"));
+                });
+                tdActions.appendChild(actionDiv);
+                tr.appendChild(tdActions);
+                playerTbody.appendChild(tr);
+            });
+        }
+
+        setInterval(() => {
+            jc4mp.sendMessage('update_playerlist', {});
+            jc4mp.sendMessage('update_resource_list', {});
+        }, 3000);
+
+        jc4mp.on('fresh_playerlist', (data) => {
+            if (data.players && data.players.length > 0) renderPlayerList(data.players);
+        });
+
+
+        // ============================
+        //  LOOT SYSTEM
+        // ============================
+
+        // Recompute tier card counts from all rows in loot-tbody
+        function updateLootTierCounts() {
+            const rows = document.querySelectorAll('#loot-tbody tr[data-tier]');
+            const counts = { 1: 0, 2: 0, 3: 0, 4: 0 };
+            rows.forEach(row => {
+                const tier = parseInt(row.dataset.tier);
+                if (counts[tier] !== undefined) counts[tier]++;
+            });
+            for (let t = 1; t <= 4; t++) {
+                const el = document.getElementById(`loot-count-tier${t}`);
+                if (el) {
+                    el.textContent = counts[t];
+                    // Animate on change
+                    el.style.transform = "scale(1.15)";
+                    el.style.transition = "transform 0.2s ease";
+                    setTimeout(() => { el.style.transform = "scale(1)"; }, 200);
+                }
+            }
+            const total = Object.values(counts).reduce((a, b) => a + b, 0);
+            const totalEl = document.getElementById("loot-total-count");
+            if (totalEl) totalEl.textContent = `${total} entr${total === 1 ? "y" : "ies"}`;
+        }
+
+        // Tier label helpers
+        const TIER_LABELS = { 1: "Common", 2: "Uncommon", 3: "Rare", 4: "Legendary" };
+
+        // Build a loot row from a data object
+        function buildLootRow(entry) {
+            const tier = parseInt(entry.tier) || 1;
+            const tr = document.createElement("tr");
+            tr.dataset.tier = tier;
+
+            const tierLabel = TIER_LABELS[tier] || `Tier ${tier}`;
+
+            tr.innerHTML = `
+                <td style="opacity:0.6; font-size:13px;">${entry.id ?? "-"}</td>
+                <td class="col-name">${entry.name ?? "-"}</td>
+                <td>
+                    <span class="tier-badge" data-tier="${tier}">
+                        <i class="fa-solid fa-circle" style="font-size:7px;"></i>
+                        T${tier} · ${tierLabel}
+                    </span>
+                </td>
+                <td>${entry.spawned_by ?? "-"}</td>
+                <td style="font-size:13px; color:#71717a;">(${Number(entry.pos_x ?? 0).toFixed(2)}, ${Number(entry.pos_y ?? 0).toFixed(2)}, ${Number(entry.pos_z ?? 0).toFixed(2)})</td>
+                <td style="color:#71717a; font-size:13px;">${entry.date ?? "-"}</td>
+                <td>
+                    <div class="action-btns">
+                        <button class="action-btn loot-waypoint-btn"
+                            data-x="${entry.pos_x ?? 0}"
+                            data-y="${entry.pos_y ?? 0}"
+                            data-z="${entry.pos_z ?? 0}">
+                            <i class="fa-solid fa-location-crosshairs" style="margin-right:4px;font-size:11px;"></i>Waypoint
+                        </button>
+                        <button class="action-btn loot-delete-btn" data-id="${entry.id}"
+                            style="border-color: rgba(239,68,68,0.4); color:#f87171;">
+                            <i class="fa-solid fa-trash" style="margin-right:4px;font-size:11px;"></i>Delete
+                        </button>
+                    </div>
+                </td>
+            `;
+
+            // Waypoint button
+            tr.querySelector(".loot-waypoint-btn").addEventListener("click", (e) => {
+                const btn = e.currentTarget;
+                btn.style.borderColor = "#4ade80";
+                btn.style.color = "#4ade80";
+                setTimeout(() => { btn.style.borderColor = ""; btn.style.color = ""; }, 500);
+                jc4mp.sendMessage("loot_action_request", {
+                    action: "waypoint",
+                    id: entry.id,
+                    pos: { x: Number(entry.pos_x), y: Number(entry.pos_y), z: Number(entry.pos_z) }
+                });
+            });
+
+            // Delete button
+            tr.querySelector(".loot-delete-btn").addEventListener("click", () => {
+                showConfirmPopup(
+                    `Delete Loot #${entry.id}?`,
+                    `Remove <strong>${entry.name}</strong> (Tier ${tier}) from the database?`,
+                    () => {
+                        jc4mp.sendMessage("loot_action_request", { action: "delete", id: entry.id });
+                        tr.style.transition = "opacity 0.3s ease";
+                        tr.style.opacity = "0";
+                        setTimeout(() => {
+                            tr.remove();
+                            updateLootTierCounts();
+                        }, 300);
+                    }
+                );
+            });
+
+            return tr;
+        }
+
+        // === Receive full loot list from Lua ===
+        jc4mp.on("loot_list_update", data => {
+            const lootTbody = document.getElementById("loot-tbody");
+            if (!lootTbody) return;
+
+            lootTbody.innerHTML = "";
+
+            const list = Array.isArray(data?.loots) ? data.loots : [];
+
+            if (list.length === 0) {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td colspan="7" style="text-align:center;opacity:0.5;padding:30px;">No loot spawns found.</td>`;
+                lootTbody.appendChild(tr);
+                updateLootTierCounts();
+                return;
+            }
+
+            list.forEach(entry => lootTbody.appendChild(buildLootRow(entry)));
+            updateLootTierCounts();
+        });
+
+        // === Loot refresh button ===
+        document.getElementById("loot-refresh-btn")?.addEventListener("click", () => {
+            jc4mp.sendMessage("loot_action_request", { action: "refresh" });
+            const btn = document.getElementById("loot-refresh-btn");
+            btn.textContent = "Refreshing...";
+            btn.disabled = true;
+            setTimeout(() => { btn.textContent = "Refresh"; btn.disabled = false; }, 1500);
+        });
+
+        // === Request loot list on tab open (handled by tab switching) ===
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                if (tab.dataset.tab === "loot") {
+                    jc4mp.sendMessage("loot_action_request", { action: "refresh" });
+                }
+            });
+        });
+        // === Placement mode buttons ===
+        const TIER_PLACE_COLORS = { 1: "#9ca3af", 2: "#10b981", 3: "#3b82f6", 4: "#f59e0b" };
+        const TIER_PLACE_NAMES = { 1: "Common", 2: "Uncommon", 3: "Rare", 4: "Epic" };
+
+        document.querySelectorAll(".loot-place-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const tier = parseInt(btn.dataset.tier);
+                const color = TIER_PLACE_COLORS[tier];
+
+                document.querySelectorAll(".loot-place-btn").forEach(b => {
+                    b.style.background = ""; b.style.color = ""; b.style.borderColor = "";
+                });
+                btn.style.background = color;
+                btn.style.color = "#000";
+                btn.style.borderColor = color;
+
+                const status = document.getElementById("loot-place-status");
+                if (status) {
+                    status.textContent = `Placement mode active — T${tier} · ${TIER_PLACE_NAMES[tier]}`;
+                    status.style.color = color;
+                }
+
+                jc4mp.sendMessage("loot_place_mode", { tier });
+            });
+        });
+
+        jc4mp.on("loot_place_confirmed", (data) => {
+            document.querySelectorAll(".loot-place-btn").forEach(b => {
+                b.style.background = ""; b.style.color = ""; b.style.borderColor = "";
+            });
+            const status = document.getElementById("loot-place-status");
+            if (status) {
+                status.textContent = `✓ T${data.tier} placed`;
+                status.style.color = "#4ade80";
+                setTimeout(() => { status.textContent = ""; status.style.color = "#71717a"; }, 4000);
+            }
+
+            // Add row to table
+            const lootTbody = document.getElementById("loot-tbody");
+            if (lootTbody && data.id) {
+                const tr = buildLootRow(data);
+                lootTbody.prepend(tr);
+                updateLootTierCounts();
+                tr.style.background = "rgba(74,222,128,0.1)";
+                tr.style.transition = "background 1.5s ease";
+                setTimeout(() => tr.style.background = "", 1500);
+            }
+        });
+        jc4mp.on("loot_spawn_deleted", (data) => {
+            document.querySelectorAll("#loot-tbody tr").forEach(tr => {
+                const idCell = tr.children[0];
+                if (idCell && parseInt(idCell.textContent) === data.id) {
+                    tr.style.transition = "opacity 0.3s ease";
+                    tr.style.opacity = "0";
+                    setTimeout(() => { tr.remove(); updateLootTierCounts(); }, 300);
+                }
+            });
+        });
+        jc4mp.on("loot_place_cancelled", () => {
+            document.querySelectorAll(".loot-place-btn").forEach(b => {
+                b.style.background = ""; b.style.color = ""; b.style.borderColor = "";
+                b.classList.remove("active-place");
+            });
+            const status = document.getElementById("loot-place-status");
+            if (status) {
+                status.textContent = "Cancelled";
+                status.style.color = "#71717a";
+                setTimeout(() => { status.textContent = ""; }, 2000);
+            }
+        });
+        // === LOOT MAP ===
+        // === LOOT MAP ===
+        const MAP_IMAGE_SIZE = 10000;
+        const WORLD_SIZE = 32000;
+        const MAP_SCALE = MAP_IMAGE_SIZE / WORLD_SIZE;
+        const X_OFFSET = 44;
+        const Y_OFFSET = -105;
+
+        const TIER_PIN_COLORS = { 1: "#9ca3af", 2: "#10b981", 3: "#3b82f6", 4: "#f59e0b" };
+        const TIER_PIN_NAMES = { 1: "Common", 2: "Uncommon", 3: "Rare", 4: "Epic" };
+
+        let mapSpawns = [];
+        let mapTranslateX = 0;
+        let mapTranslateY = 0;
+        let mapZoom = 0.08;
+        let activeFilter = "all";
+
+        // Map pan state
+        let isMapDragging = false;
+        let mapDragStartX = 0;
+        let mapDragStartY = 0;
+        let mapDragOriginX = 0;
+        let mapDragOriginY = 0;
+
+        // Popup drag state
+        let isPopupDragging = false;
+        let popupDragStartX = 0;
+        let popupDragStartY = 0;
+        let popupOriginLeft = 0;
+        let popupOriginTop = 0;
+
+        const mapOverlay = document.getElementById("loot-map-overlay");
+        const mapPopup = document.getElementById("loot-map-popup");
+        const mapWorld = document.getElementById("loot-map-world");
+        const mapPinsDiv = document.getElementById("loot-map-pins");
+        const mapTooltip = document.getElementById("map-pin-tooltip");
+        const mapSpawnCount = document.getElementById("map-spawn-count");
+        const mapContainer = document.getElementById("loot-map-container");
+
+        function applyMapTransform() {
+            mapWorld.style.transform = `translate(${mapTranslateX}px, ${mapTranslateY}px) scale(${mapZoom})`;
+        }
+
+        function worldToMapPixel(wx, wz) {
+            const imgCenter = MAP_IMAGE_SIZE / 2;
+            return {
+                x: (wx * MAP_SCALE) + imgCenter + X_OFFSET,
+                y: (wz * MAP_SCALE) + imgCenter + Y_OFFSET
+            };
+        }
+
+        function renderMapPins() {
+            mapPinsDiv.innerHTML = "";
+
+            let filtered;
+            if (activeFilter === "all") {
+                filtered = mapSpawns;
+            } else if (activeFilter === "db") {
+                filtered = mapSpawns.filter(s => s.source === "db" || !s.source);
+            } else if (activeFilter === "world") {
+                filtered = mapSpawns.filter(s => s.source === "world");
+            } else {
+                filtered = mapSpawns.filter(s => String(s.tier) === String(activeFilter));
+            }
+
+            filtered.forEach(spawn => {
+                const px = worldToMapPixel(Number(spawn.pos_x), Number(spawn.pos_z));
+                const color = TIER_PIN_COLORS[spawn.tier] || "#fff";
+
+                const pin = document.createElement("div");
+                pin.className = "loot-map-pin";
+                pin.style.left = px.x + "px";
+                pin.style.top = px.y + "px";
+                pin.style.background = color;
+                pin.style.boxShadow = `0 0 6px ${color}`;
+
+                pin.addEventListener("mouseenter", (e) => {
+                    mapTooltip.style.display = "block";
+                    mapTooltip.innerHTML = `
+                <div style="font-weight:700; color:${color}; margin-bottom:4px;">
+                    T${spawn.tier} · ${TIER_PIN_NAMES[spawn.tier]}
+                </div>
+                <div style="color:#71717a; font-size:12px;">ID: ${spawn.id ?? "-"}</div>
+                <div style="color:#71717a; font-size:12px;">By: ${spawn.spawned_by ?? "-"}</div>
+                <div style="color:#71717a; font-size:12px; margin-top:4px;">
+                    (${Number(spawn.pos_x).toFixed(1)}, ${Number(spawn.pos_y).toFixed(1)}, ${Number(spawn.pos_z).toFixed(1)})
+                </div>
+            `;
+                });
+
+                pin.addEventListener("mousemove", (e) => {
+                    mapTooltip.style.left = (e.clientX + 14) + "px";
+                    mapTooltip.style.top = (e.clientY - 10) + "px";
+                });
+
+                pin.addEventListener("mouseleave", () => {
+                    mapTooltip.style.display = "none";
+                });
+
+                mapPinsDiv.appendChild(pin);
+            });
+
+            if (mapSpawnCount) {
+                mapSpawnCount.textContent = `${filtered.length} spawn${filtered.length !== 1 ? "s" : ""}${activeFilter !== "all" ? ` (T${activeFilter})` : ""}`;
+            }
+        }
+
+        function openLootMap() {
+            // Reset popup to centered position
+            mapPopup.style.position = "relative";
+            mapPopup.style.left = "";
+            mapPopup.style.top = "";
+
+            mapOverlay.style.display = "flex";
+
+            const cw = mapContainer.clientWidth || 1200;
+            const ch = mapContainer.clientHeight || 700;
+            mapZoom = Math.min(cw, ch) / MAP_IMAGE_SIZE * 1.0;
+            mapTranslateX = (cw - MAP_IMAGE_SIZE * mapZoom) / 2;
+            mapTranslateY = (ch - MAP_IMAGE_SIZE * mapZoom) / 2;
+            applyMapTransform();
+            renderMapPins();
+        }
+
+        document.getElementById("loot-map-btn")?.addEventListener("click", openLootMap);
+        document.getElementById("loot-map-close")?.addEventListener("click", () => {
+            mapOverlay.style.display = "none";
+            mapTooltip.style.display = "none";
+        });
+
+        // === Filter buttons ===
+        document.querySelectorAll(".map-filter-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".map-filter-btn").forEach(b => b.classList.remove("active-filter"));
+                btn.classList.add("active-filter");
+                activeFilter = btn.dataset.filter;
+                renderMapPins();
+            });
+        });
+
+        // === Map pan — hold mouse down to drag ===
+        mapContainer.addEventListener("mousedown", (e) => {
+            if (e.target.classList.contains("loot-map-pin")) return;
+            e.stopPropagation(); // <-- this is the fix, prevents bubbling to popup drag
+            isMapDragging = true;
+            mapDragStartX = e.clientX;
+            mapDragStartY = e.clientY;
+            mapDragOriginX = mapTranslateX;
+            mapDragOriginY = mapTranslateY;
+            mapContainer.style.cursor = "grabbing";
+        });
+
+        // === Popup drag — drag by header ===
+        const mapHeader = mapPopup.querySelector("div:first-child");
+        mapHeader.style.cursor = "move";
+        mapHeader.addEventListener("mousedown", (e) => {
+            if (e.target.closest("button")) return;
+            isPopupDragging = true;
+
+            // Switch to absolute positioning for free movement
+            const rect = mapPopup.getBoundingClientRect();
+            mapPopup.style.position = "fixed";
+            mapPopup.style.left = rect.left + "px";
+            mapPopup.style.top = rect.top + "px";
+            mapPopup.style.margin = "0";
+            // Remove from flex centering
+            mapOverlay.style.alignItems = "flex-start";
+            mapOverlay.style.justifyContent = "flex-start";
+
+            popupDragStartX = e.clientX;
+            popupDragStartY = e.clientY;
+            popupOriginLeft = rect.left;
+            popupOriginTop = rect.top;
+            e.stopPropagation();
+        });
+
+        window.addEventListener("mousemove", (e) => {
+            if (isMapDragging) {
+                mapTranslateX = mapDragOriginX + (e.clientX - mapDragStartX);
+                mapTranslateY = mapDragOriginY + (e.clientY - mapDragStartY);
+                applyMapTransform();
+            }
+
+            if (isPopupDragging) {
+                const newLeft = popupOriginLeft + (e.clientX - popupDragStartX);
+                const newTop = popupOriginTop + (e.clientY - popupDragStartY);
+                mapPopup.style.left = newLeft + "px";
+                mapPopup.style.top = newTop + "px";
+            }
+        });
+
+        window.addEventListener("mouseup", () => {
+            if (isMapDragging) {
+                isMapDragging = false;
+                mapContainer.style.cursor = "grab";
+            }
+            isPopupDragging = false;
+        });
+
+        // === Scroll to zoom ===
+        mapContainer.addEventListener("wheel", (e) => {
+            e.preventDefault();
+            const rect = mapContainer.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+            const newZoom = Math.min(2, Math.max(0.04, mapZoom * zoomFactor));
+
+            mapTranslateX = mouseX - (mouseX - mapTranslateX) * (newZoom / mapZoom);
+            mapTranslateY = mouseY - (mouseY - mapTranslateY) * (newZoom / mapZoom);
+            mapZoom = newZoom;
+            applyMapTransform();
+        }, { passive: false });
+
+        // === Add active-filter CSS ===
+        const mapFilterStyle = document.createElement("style");
+        mapFilterStyle.textContent = `
+    .map-filter-btn.active-filter {
+        background: rgba(56,189,248,0.15) !important;
+        border-color: #38bdf8 !important;
+        color: #38bdf8 !important;
+    }
+    .map-filter-btn[data-filter="db"].active-filter {
+        background: rgba(167,139,250,0.15) !important;
+        border-color: #a78bfa !important;
+        color: #a78bfa !important;
+    }
+    .map-filter-btn[data-filter="world"].active-filter {
+        background: rgba(251,146,60,0.15) !important;
+        border-color: #fb923c !important;
+        color: #fb923c !important;
+    }
+`;
+        document.head.appendChild(mapFilterStyle);
+
+        // === Keep pins in sync ===
+        jc4mp.on("loot_list_update", data => {
+            mapSpawns = Array.isArray(data?.loots) ? data.loots : [];
+            if (mapOverlay.style.display === "flex") renderMapPins();
+        });
+
+        jc4mp.on("loot_place_confirmed", (data) => {
+            if (data.id) {
+                mapSpawns.push(data);
+                if (mapOverlay.style.display === "flex") renderMapPins();
+            }
+        });
+
+        jc4mp.on("loot_spawn_deleted", (data) => {
+            mapSpawns = mapSpawns.filter(s => s.id !== data.id);
+            if (mapOverlay.style.display === "flex") renderMapPins();
+        });
+
+        document.getElementById("map-admin-toggle")?.addEventListener("change", (e) => {
+            jc4mp.sendMessage("map_set_can_draw", { enabled: e.target.checked });
+        });
+
+    </script>
+
+</body>
+
+</html>
