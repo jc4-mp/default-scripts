@@ -38,6 +38,8 @@ Event.Add("OnRender", function()
 end)
 
 function renderMenu()
+    hovered_location_index_this_frame = nil
+
     local screen_size = Render.GetSize()
     if not screen_size or screen_size.x == 0 or screen_size.y == 0 then return end -- Guard against invalid screen size
 
