@@ -34,18 +34,24 @@ local suicideMsgs =
     "%s self-deleted. Impressive.",
 }
 
-Event.Add("OnPlayerKilled", function(player, damager, loss, hitBone, weapon, position)
+local function getName(player)
+	local client = player:GetClient()
+
+	return client and client:GetName() or "?"
+end
+
+Event.Add("OnPlayerKilled", function(player, damager, loss, weapon, position)
 	local playerDamager = damager and damager:AsPlayer() or nil
 
     if playerDamager and player ~= playerDamager then
-		Chat.Print(playerDamager:GetNick() .. " " .. coolKillMsgs[math.random(1, #coolKillMsgs)] .. " " .. player:GetNick())
+		Chat.Print(getName(playerDamager) .. " " .. coolKillMsgs[math.random(1, #coolKillMsgs)] .. " " .. getName(player))
     else
-        Chat.Print(string.format(suicideMsgs[math.random(1, #suicideMsgs)], player:GetNick()))
+        Chat.Print(string.format(suicideMsgs[math.random(1, #suicideMsgs)], getName(player)))
     end
 end)
 
 Cmd.Add("p", function()
-	print(Players.LocalPlayer():GetPosition() + vec3(0, 1, 0))
+	print(World.LocalPlayer():GetPosition() + vec3(0, 1, 0))
 end)
 
 Event.Add("OnResourceStart", function(name)
