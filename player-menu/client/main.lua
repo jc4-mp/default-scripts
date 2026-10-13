@@ -1,9 +1,16 @@
 local open = false
 
+-- clients have no pings (only the server keeps them), the server sends them every second while the menu is open:
+-- net id -> ping
+local pings = {}
+
 function toggleOpen()
     open = not open
     Input.SetEnabled(not open)
     UI.SetCursorVisible(open)
+
+    pings = {}
+    Net.Send("playerMenu:open", open)
 end
 
 -- Listen for 'P' key press to toggle the menu
@@ -25,11 +32,18 @@ end)
 local players_list = {}
 local t = 0
 
+Net.AddEvent("playerMenu:pings", function(list)
+    pings = {}
+    for _, entry in ipairs(list) do
+        pings[entry[1]] = entry[2]
+    end
+end)
+
 function onRender()
     -- Update players list every 1 second
     local nowTime = Client:GetElapsedSeconds()
     if nowTime - t > 1 then
-        players_list = Players.GetJoined()
+        players_list = World.GetPlayers()
         t = nowTime
     end
 
@@ -58,10 +72,10 @@ function onRender()
                 UI.TableHeadersRow()
 
                 for _, player_client in ipairs(players_list) do
-                    if player_client and player_client.GetNetId and player_client.GetNick then
+                    if player_client and player_client.GetNetId and player_client.GetName then
                         local net_id = player_client:GetNetId()
-                        local nick = player_client:GetNick()
-                        local net_player = player_client:GetNetPlayer()
+                        local nick = player_client:GetName()
+                        local net_player = player_client:GetPlayer()
 
                         UI.TableNextRow(nil, 28) -- 28 is a slightly larger row height for padding
 
@@ -69,8 +83,8 @@ function onRender()
                         UI.Text(tostring(net_id))
 
                         UI.TableNextColumn() -- Column for Ping
-                        local ping = math.floor(player_client:GetPing())
-                        UI.Text(tostring(ping))
+                        local ping = pings[net_id]
+                        UI.Text(ping and tostring(math.floor(ping)) or "-")
 
                         UI.TableNextColumn()
                         UI.Text(nick or "Loading...")
@@ -79,13 +93,9 @@ function onRender()
                         if net_player and net_player.GetPosition then
                             local avail = UI.GetContentRegionAvail()
                             if UI.Button("Warp##" .. tostring(net_id), vec2(avail.x, 0)) then
-                                local target_pos = net_player:GetPosition()
-                                if target_pos then
-                                    Net.Send("requestTeleport", target_pos)
-                                    toggleOpen() -- Close menu after warping
-                                else
-                                    print("[PlayerMenu] Warning: Could not get position for player " .. (nick or tostring(net_id)))
-                                end
+                                -- the server teleports this player to where it has the target
+                                Net.Send("playerMenu:warp", net_id)
+                                toggleOpen() -- Close menu after warping
                             end
                         else
                             -- If no net_player or GetPosition, button cannot function
