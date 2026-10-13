@@ -18,6 +18,10 @@ Net.AddEvent("Derby:DisableAbilities", function()
     lockAllAbilities()
 end)
 
+Net.AddEvent("Derby:StartDenied", function(data)
+    Chat.Print(data.msg)
+end)
+
 Net.AddEvent("Derby:EnableAbilities", function()
     unlockAllAbilities()
 end)

@@ -11,6 +11,7 @@ local spawnedVehicles = {}
 local alivePlayers = {}
 local playerVehicleMap = {}
 local roundActive = false
+local roundOver = false
 local setupInProgress = false
 local heightTimer = nil
 local freezeTimer = nil
@@ -19,6 +20,11 @@ local totalPlayers = 0
 
 local function broadcast(msg)
     Chat.Broadcast(msg:gsub("[\128-\255]", ""))
+end
+
+local function getName(player)
+    local client = player:GetClient()
+    return client and client:GetName() or "?"
 end
 
 local function getAllPlayers()
@@ -37,13 +43,14 @@ local function checkVehicleHeights()
         if vehNetId and spawnedVehicles[vehNetId] then
             local veh = spawnedVehicles[vehNetId]
             if veh:GetPosition().y < 595 then
-                veh:SetHealth(-10000)
+                veh:SetHealth(0)
             end
         end
     end
 end
 
 local function startRoundCountdown()
+    heightTimer = Timer.Set(checkVehicleHeights, CHECK_INTERVAL, -1)
     Timer.Set(function()
         broadcast("The derby will begin in 3 seconds!")
     end, 1, 1)
@@ -57,13 +64,13 @@ local function startRoundCountdown()
     Timer.Set(function()
         broadcast("GO! Let the chaos begin!")
         roundActive = true
-        heightTimer = Timer.Set(checkVehicleHeights, CHECK_INTERVAL, -1)
     end, START_DELAY, 1)
 end
 
 local function endRound()
     if not roundActive and not setupInProgress then return end
     roundActive = false
+    roundOver = false
     setupInProgress = false
 
     if heightTimer then
@@ -89,7 +96,7 @@ local function endRound()
 end
 
 local function checkWinner()
-    if not roundActive then return end
+    if not roundActive or roundOver then return end
 
     local aliveCount = 0
     local lastPlayer = nil
@@ -100,10 +107,11 @@ local function checkWinner()
 
     if aliveCount <= 1 then
         if lastPlayer then
-            broadcast(string.format("%s wins the derby!", lastPlayer:GetNick()))
+            broadcast(string.format("%s wins the derby!", getName(lastPlayer)))
         else
             broadcast("All vehicles have been destroyed. No winner this round.")
         end
+        roundOver = true
         Timer.Set(endRound, 2000, 1)
     end
 end
@@ -112,7 +120,7 @@ local function removePlayerFromDerby(player)
     local pid = tostring(player:GetNetId())
     if not alivePlayers[pid] then return end
     
-    broadcast(string.format("%s has been eliminated!", player:GetNick()))
+    broadcast(string.format("%s has been eliminated!", getName(player)))
     alivePlayers[pid] = nil
 
     local vehNetId = playerVehicleMap[pid]
@@ -130,7 +138,7 @@ Event.Add("OnPlayerTeleport", function(player)
     if alivePlayers[pNetId] then
         local vehNetId = playerVehicleMap[pNetId]
         if vehNetId and spawnedVehicles[vehNetId] then
-            player:WarpIntoVehicle(spawnedVehicles[vehNetId], VehicleSeat.Driver)
+            player:WarpIntoVehicle(spawnedVehicles[vehNetId], VehicleSeat.DriverSeat)
         end
 
         loadedCount = loadedCount + 1
@@ -143,10 +151,15 @@ Event.Add("OnPlayerTeleport", function(player)
     end
 end)
 
-Event.Add("OnPlayerKilled", function(player, _, _, _, _, _)
+Event.Add("OnPlayerKilled", function(player, _, _, _, _)
     if roundActive and alivePlayers[tostring(player:GetNetId())] then
         removePlayerFromDerby(player)
     end
+end)
+
+Event.Add("OnPlayerQuit", function(client)
+    local player = client:GetPlayer()
+    if player then removePlayerFromDerby(player:AsPlayer()) end
 end)
 
 Net.AddEvent("Derby:StartRequest", function(_)
@@ -154,9 +167,8 @@ Net.AddEvent("Derby:StartRequest", function(_)
     if not caller then return end
     if roundActive or setupInProgress then return end
 
-    local acl = caller:GetAclLevel()
-    if acl ~= AclLevel.Admin and acl ~= AclLevel.Owner then
-        Net.Send("Derby:StartDenied", { msg = "You need admin rights." }, caller)
+    if not caller:HasAcl(AclLevel.Admin) and not caller:HasAcl(AclLevel.Owner) then
+        Net.SendToPlayer(caller, "Derby:StartDenied", { msg = "You need admin rights." })
         return
     end
 
@@ -185,12 +197,12 @@ Net.AddEvent("Derby:StartRequest", function(_)
             CENTER.z + radius * math.sin(angle)
         )
 
-        local yaw = math.atan(pos.x - CENTER.x, pos.z - CENTER.z)
+        local yaw = math.atan2(pos.x - CENTER.x, pos.z - CENTER.z)
 
         local half_yaw = yaw * 0.5
         local rot = quat(math.cos(half_yaw), 0, math.sin(half_yaw), 0)
 
-        local veh = World.SpawnVehicle(model, pos, rot)
+        local veh = World.SpawnVehicle(model, pos, vec3(0, math.deg(yaw), 0))
 
         veh:SetLocked(true)
         veh:SetRotation(rot)
@@ -223,6 +235,7 @@ Net.AddEvent("Derby:StartRequest", function(_)
     Net.Broadcast("Derby:DisableAbilities")
 end)
 
-Event.Add("OnResourceStop", function()
+Event.Add("OnResourceStop", function(name)
+    if name ~= Resource.Name then return end
     if roundActive or setupInProgress then endRound() end
 end)
