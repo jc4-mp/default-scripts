@@ -31,9 +31,9 @@ Net.AddEvent("spawn", function(id, position)
         "models/environments/locale_global/glo_prop_metal_fence_a/glo_prop_metal_fence_a_debris_single_plate_01_col.pfxc",
         RigidObjectMotionType.Static)]]
 
-    Timer.Set(function(rigidobject, newPos)
+    --[[Timer.Set(function(rigidobject, newPos)
         rigidobject:SetPosition(newPos + vec3(0.0, 5.0, 0.0))
-    end, 2500, 1, veh1, position)
+    end, 2500, 1, veh1, position)]]
 
     --[[Timer.Set(function(obj)
         print(obj:GetPfx(), obj:GetModel())
