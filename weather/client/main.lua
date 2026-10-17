@@ -16,12 +16,19 @@ Event.Add("OnKeyDown", function(key)
 	end
 
 	if key == Key.J then
-		--Net.Send("setSandstorm", World.LocalPlayer():AsPlayer():GetAimPosition())
 		if water then
 			water:Destroy()
 			water = nil
 		else
 			water = World.SpawnWaterBox(World.LocalPlayer():AsPlayer():GetAimPosition(), vec3(10, 5, 10), 1)
 		end
+	end
+
+	if key == Key.H then
+		Net.Send("spawnSandstorm", World.LocalPlayer():AsPlayer():GetAimPosition())
+	end
+
+	if key == Key.L then
+		Net.Send("destroySandstorm")
 	end
 end)
