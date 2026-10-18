@@ -1,7 +1,7 @@
 local water = nil
 
 Event.Add("OnKeyDown", function(key)
-	if Chat.IsTyping() or not World.LocalPlayer() then return end
+	if not World.LocalPlayer() then return end
 
 	if key == Key.M then
 		Net.Send("spawnTornado", World.LocalPlayer():AsPlayer():GetAimPosition())

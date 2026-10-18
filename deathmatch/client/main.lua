@@ -44,9 +44,9 @@ Event.Add("OnPlayerKilled", function(player, damager, loss, weapon, position)
 	local playerDamager = damager and damager:AsPlayer() or nil
 
     if playerDamager and player ~= playerDamager then
-		Chat.Print(getName(playerDamager) .. " " .. coolKillMsgs[math.random(1, #coolKillMsgs)] .. " " .. getName(player))
+		Event.Fire("AddChatMessage", { parts = { { text = getName(playerDamager) .. " " .. coolKillMsgs[math.random(1, #coolKillMsgs)] .. " " .. getName(player) } } })
     else
-        Chat.Print(string.format(suicideMsgs[math.random(1, #suicideMsgs)], getName(player)))
+        Event.Fire("AddChatMessage", { parts = { { text = string.format(suicideMsgs[math.random(1, #suicideMsgs)], getName(player)) } } })
     end
 end)
 

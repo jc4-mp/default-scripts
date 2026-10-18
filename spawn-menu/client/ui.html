@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Spawn Menu</title>
+<style>
+	* { box-sizing: border-box; margin: 0; }
+	html, body { height: 100%; overflow: hidden; background: transparent; }
+	body { display: grid; place-items: center; font: 14px/1.4 "Segoe UI", sans-serif; color: #e8e8ee; user-select: none; }
+	.panel { display: flex; flex-direction: column; width: min(1000px, 90vw); height: min(800px, 80vh); background: rgba(16, 18, 26, 0.94); border: 1px solid #2c3040; border-radius: 8px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5); }
+	header { display: flex; align-items: center; padding: 10px 14px; border-bottom: 1px solid #2c3040; font-weight: 600; }
+	header .close { margin-left: auto; padding: 2px 9px; }
+	button { font: inherit; color: inherit; background: #2a3042; border: 1px solid #3a4258; border-radius: 4px; padding: 4px 12px; cursor: pointer; }
+	button:hover:not(:disabled) { background: #384060; }
+	button:disabled { opacity: 0.4; cursor: default; }
+	.tabs { display: flex; flex-wrap: wrap; gap: 2px; padding: 8px 10px 0; border-bottom: 1px solid #2c3040; }
+	.tabs button { border: none; border-radius: 4px 4px 0 0; background: transparent; color: #9aa0b8; }
+	.tabs button.active { background: #2a3042; color: #e8e8ee; }
+	.list { flex: 1; overflow-y: auto; padding: 4px; }
+	.item { padding: 4px 10px; border-radius: 4px; cursor: pointer; }
+	.item:hover { background: #262b3c; }
+	.item.selected { background: #34406a; }
+	.separator { display: flex; align-items: center; gap: 10px; padding: 10px 10px 4px; color: #9aa0b8; font-weight: 600; }
+	.separator::after { content: ""; flex: 1; border-top: 1px solid #2c3040; }
+	footer { padding: 10px 14px; border-top: 1px solid #2c3040; }
+	#spawn { width: 100%; height: 34px; background: #3d6bd8; border-color: #4f7ce6; }
+</style>
+</head>
+<body>
+<div class="panel">
+	<header>Spawn Menu<button class="close">✕</button></header>
+	<div class="tabs" id="tabs"></div>
+	<div class="list" id="items"></div>
+	<footer><button id="spawn" disabled></button></footer>
+</div>
+<script>
+	const jc = window.JC4MP
+	const $ = id => document.getElementById(id)
+	const list = v => Array.isArray(v) ? v : []
+
+	function el(tag, props, ...children) {
+		const e = Object.assign(document.createElement(tag), props)
+		e.append(...children)
+		return e
+	}
+
+	let closeKey
+	let categories = []
+	let active = 0
+	let selected = null
+
+	const close = () => jc.sendMessage('close')
+
+	addEventListener('keydown', e => e.keyCode === 27 && close())
+	addEventListener('keyup', e => e.keyCode === closeKey && close())
+	document.querySelector('.close').onclick = close
+
+	// categories and items are sent 1-based, as they are indexed in Lua
+	$('spawn').onclick = () => jc.sendMessage('spawn', { category: selected.category + 1, item: selected.item + 1 })
+
+	function render() {
+		$('tabs').replaceChildren(...categories.map((c, i) =>
+			el('button', { className: i === active ? 'active' : '', textContent: c.name, onclick: () => { active = i; $('items').scrollTop = 0; render() } })))
+
+		$('items').replaceChildren(...list(categories[active]?.items).map((item, i) => item.separator
+			? el('div', { className: 'separator', textContent: item.name })
+			: el('div', {
+				className: 'item' + (selected?.category === active && selected.item === i ? ' selected' : ''),
+				textContent: item.name,
+				onclick: () => { selected = { category: active, item: i }; render() },
+			})))
+
+		$('spawn').textContent = categories[active]?.button_name ?? ''
+		$('spawn').disabled = !selected
+	}
+
+	jc.on('init', d => {
+		closeKey = d.close_key
+		categories = list(d.categories)
+		render()
+	})
+</script>
+</body>
+</html>

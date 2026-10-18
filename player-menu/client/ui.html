@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Player List</title>
+<style>
+	* { box-sizing: border-box; margin: 0; }
+	html, body { height: 100%; overflow: hidden; background: transparent; }
+	body { display: grid; place-items: center; font: 14px/1.4 "Segoe UI", sans-serif; color: #e8e8ee; user-select: none; }
+	.panel { display: flex; flex-direction: column; width: min(600px, 90vw); height: min(500px, 80vh); background: rgba(16, 18, 26, 0.94); border: 1px solid #2c3040; border-radius: 8px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5); }
+	header { display: flex; align-items: center; padding: 10px 14px; border-bottom: 1px solid #2c3040; font-weight: 600; }
+	header .close { margin-left: auto; padding: 2px 9px; }
+	button { font: inherit; color: inherit; background: #2a3042; border: 1px solid #3a4258; border-radius: 4px; padding: 4px 12px; cursor: pointer; }
+	button:hover { background: #384060; }
+	.scroll { flex: 1; overflow-y: auto; }
+	table { width: 100%; border-collapse: collapse; }
+	th { position: sticky; top: 0; background: #1c2030; text-align: left; font-weight: 600; color: #9aa0b8; }
+	th, td { padding: 6px 12px; }
+	tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.03); }
+	td.id, td.ping { width: 60px; color: #9aa0b8; }
+	td.warp { width: 90px; }
+	td.warp button { width: 100%; }
+</style>
+</head>
+<body>
+<div class="panel">
+	<header>Player List<button class="close">✕</button></header>
+	<div class="scroll">
+		<table>
+			<thead><tr><th>ID</th><th>Ping</th><th>Name</th><th></th></tr></thead>
+			<tbody id="rows"></tbody>
+		</table>
+	</div>
+</div>
+<script>
+	const jc = window.JC4MP
+	const $ = id => document.getElementById(id)
+	const list = v => Array.isArray(v) ? v : []
+
+	function el(tag, props, ...children) {
+		const e = Object.assign(document.createElement(tag), props)
+		e.append(...children)
+		return e
+	}
+
+	let closeKey
+	const close = () => jc.sendMessage('close')
+
+	jc.on('init', d => closeKey = d.close_key)
+	addEventListener('keydown', e => e.keyCode === 27 && close())
+	addEventListener('keyup', e => e.keyCode === closeKey && close())
+	document.querySelector('.close').onclick = close
+
+	jc.on('players', players => $('rows').replaceChildren(...list(players).map(p => el('tr', {},
+		el('td', { className: 'id', textContent: p.id }),
+		el('td', { className: 'ping', textContent: p.ping }),
+		el('td', { textContent: p.name }),
+		el('td', { className: 'warp' }, p.can_warp ? el('button', { textContent: 'Warp', onclick: () => jc.sendMessage('warp', { id: p.id }) }) : 'N/A')))))
+</script>
+</body>
+</html>

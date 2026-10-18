@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Admin Menu</title>
+<style>
+	* { box-sizing: border-box; margin: 0; }
+	html, body { height: 100%; overflow: hidden; background: transparent; }
+	body { display: grid; place-items: center; font: 14px/1.4 "Segoe UI", sans-serif; color: #e8e8ee; user-select: none; }
+	.panel { display: flex; flex-direction: column; width: min(1000px, 90vw); height: min(800px, 80vh); background: rgba(16, 18, 26, 0.94); border: 1px solid #2c3040; border-radius: 8px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5); }
+	header, footer { display: flex; align-items: center; gap: 12px; padding: 10px 14px; }
+	header { border-bottom: 1px solid #2c3040; font-weight: 600; }
+	header .close { margin-left: auto; padding: 2px 9px; }
+	footer { border-top: 1px solid #2c3040; color: #9aa0b8; gap: 20px; }
+	button { font: inherit; color: inherit; background: #2a3042; border: 1px solid #3a4258; border-radius: 4px; padding: 4px 12px; cursor: pointer; }
+	button:hover:not(:disabled) { background: #384060; }
+	button:disabled { opacity: 0.4; cursor: default; }
+	.scroll { flex: 1; overflow-y: auto; }
+	table { width: 100%; border-collapse: collapse; }
+	th { position: sticky; top: 0; background: #1c2030; text-align: left; font-weight: 600; color: #9aa0b8; }
+	th, td { padding: 6px 12px; }
+	tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.03); }
+	td.status { width: 90px; }
+	td.actions { width: 300px; }
+	td.actions button { width: 84px; margin-right: 6px; }
+	.running { color: #5ee07a; }
+	.stopped { color: #ff6060; }
+</style>
+</head>
+<body>
+<div class="panel">
+	<header>Resource Management<button id="refresh">Refresh</button><button class="close">✕</button></header>
+	<div class="scroll">
+		<table>
+			<thead><tr><th>Resource Name</th><th>Status</th><th>Actions</th></tr></thead>
+			<tbody id="rows"></tbody>
+		</table>
+	</div>
+	<footer><span id="total"></span><span id="running"></span></footer>
+</div>
+<script>
+	const jc = window.JC4MP
+	const $ = id => document.getElementById(id)
+	const list = v => Array.isArray(v) ? v : []
+
+	function el(tag, props, ...children) {
+		const e = Object.assign(document.createElement(tag), props)
+		e.append(...children)
+		return e
+	}
+
+	let closeKey
+	const close = () => jc.sendMessage('close')
+
+	jc.on('init', d => closeKey = d.close_key)
+	addEventListener('keydown', e => (e.keyCode === 27 || e.keyCode === closeKey) && close())
+	document.querySelector('.close').onclick = close
+	$('refresh').onclick = () => jc.sendMessage('refresh')
+
+	const action = (resource, name, disabled) =>
+		el('button', { textContent: name[0].toUpperCase() + name.slice(1), disabled, onclick: () => jc.sendMessage('action', { resource, action: name }) })
+
+	jc.on('resources', data => {
+		const resources = list(data)
+
+		$('rows').replaceChildren(...resources.map(r => el('tr', {},
+			el('td', { textContent: r.name }),
+			el('td', { className: 'status ' + (r.running ? 'running' : 'stopped'), textContent: r.running ? 'Running' : 'Stopped' }),
+			el('td', { className: 'actions' }, action(r.name, 'start', r.running), action(r.name, 'stop', !r.running), action(r.name, 'restart', false)))))
+
+		$('total').textContent = 'Total Resources: ' + resources.length
+		$('running').textContent = 'Running: ' + resources.filter(r => r.running).length
+	})
+</script>
+</body>
+</html>

@@ -1,21 +1,21 @@
 -- network statistics and diagnostics on the middle-left of the screen, toggled with /netstats
 
 local REFRESH_SECONDS = 0.5
-local FONT_SIZE = 14
-local LINE_HEIGHT = 16
-local MARGIN = 10
-local PADDING = 6
-local WIDTH = 520
+local WIDTH = 720
 
-local COLOR_TEXT = vec4(1, 1, 1, 1)
-local COLOR_HEADER = vec4(0.4, 0.8, 1, 1)
-local COLOR_GOOD = vec4(0.4, 1, 0.4, 1)
-local COLOR_WARN = vec4(1, 0.85, 0.3, 1)
-local COLOR_BAD = vec4(1, 0.35, 0.35, 1)
-local COLOR_BG = vec4(0, 0, 0, 0.55)
+local webview = WebView.Create("net-stats", {
+	url = "resource://net-stats/client/ui.html",
+	size = vec2(WIDTH, Render.GetSize().y),
+	visible = false,
+})
+
+-- the page's line styles, plain text has none
+local COLOR_HEADER = "header"
+local COLOR_GOOD = "good"
+local COLOR_WARN = "warn"
+local COLOR_BAD = "bad"
 
 local visible = false
-local lines = {}
 local last_refresh = -math.huge
 
 local function fmt_bytes(bytes)
@@ -48,7 +48,7 @@ local function build_lines(stats)
 	local out = {}
 
 	local function add(text, color)
-		out[#out + 1] = { text = text, color = color or COLOR_TEXT }
+		out[#out + 1] = { text = text, color = color or "" }
 	end
 
 	local function add_traffic(name, t)
@@ -109,7 +109,7 @@ local function build_lines(stats)
 		add(string.format("  level %d | out %s -> %s (%.1f%%) | %d skipped", c.level, fmt_bytes(c.compressedInBytes),
 			fmt_bytes(c.compressedOutBytes), percent(c.compressedOutBytes, c.compressedInBytes), c.skipped))
 		add(string.format("  in %s -> %s | %d failed", fmt_bytes(c.decompressedInBytes), fmt_bytes(c.decompressedOutBytes), c.failed),
-			c.failed > 0 and COLOR_BAD or COLOR_TEXT)
+			c.failed > 0 and COLOR_BAD or nil)
 	else
 		add("  disabled")
 	end
@@ -124,9 +124,11 @@ end
 
 Cmd.Add("netstats", function()
 	visible = not visible
+	last_refresh = -math.huge
+	WebView.SetVisible(webview, visible)
 end)
 
--- Client.GetNetStats must be read on the update thread, so the lines are built here and only drawn in OnRender
+-- Client.GetNetStats must be read on the update thread
 
 Event.Add("OnUpdate", function()
 	local now = Client.GetElapsedSeconds()
@@ -136,20 +138,5 @@ Event.Add("OnUpdate", function()
 	end
 
 	last_refresh = now
-	lines = build_lines(Client.GetNetStats())
-end)
-
-Event.Add("OnRender", function()
-	if not visible or #lines == 0 then
-		return
-	end
-
-	local height = #lines * LINE_HEIGHT + PADDING * 2
-	local pos = vec2(MARGIN, (Render.GetSize().y - height) / 2)
-
-	Render.FillRect(pos, vec2(WIDTH, height), COLOR_BG)
-
-	for i, line in ipairs(lines) do
-		Render.DrawText(line.text, vec2(pos.x + PADDING, pos.y + PADDING + (i - 1) * LINE_HEIGHT), FONT_SIZE, line.color, false, 1)
-	end
+	WebView.SendMessage(webview, "lines", build_lines(Client.GetNetStats()))
 end)

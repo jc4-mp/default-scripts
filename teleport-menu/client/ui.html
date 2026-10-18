@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Teleport Menu</title>
+<style>
+	* { box-sizing: border-box; margin: 0; }
+	html, body { height: 100%; overflow: hidden; background: transparent; }
+	body { font: 600 14px/1.2 "Segoe UI", sans-serif; color: #fff; user-select: none; }
+	svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+	polygon { fill: rgba(26, 26, 38, 0.75); stroke: rgba(255, 255, 255, 0.9); stroke-width: 1; cursor: pointer; }
+	polygon:hover { fill: rgba(77, 77, 102, 0.9); }
+	.label { position: absolute; width: 200px; transform: translate(-50%, -50%); text-align: center; text-shadow: 1px 1px 0 #000; pointer-events: none; }
+</style>
+</head>
+<body>
+<svg id="slices"></svg>
+<div id="labels"></div>
+<script>
+	const jc = window.JC4MP
+	const $ = id => document.getElementById(id)
+	const list = v => Array.isArray(v) ? v : []
+
+	let closeKey
+	let names = []
+
+	const close = () => jc.sendMessage('close')
+
+	addEventListener('keydown', e => e.keyCode === 27 && close())
+	addEventListener('keyup', e => e.keyCode === closeKey && close())
+
+	// slices fan out from the screen center past its edges, starting from the top
+	function render() {
+		const w = innerWidth, h = innerHeight, cx = w / 2, cy = h / 2
+		const count = names.length
+		const slice = 2 * Math.PI / count
+		const far = Math.max(w, h) * 2
+		const [scale, factor] = count > 12 ? [0.65, 0.38] : count > 8 ? [0.75, 0.34] : [0.9, 0.3]
+		const labelRadius = Math.min(w, h) * factor
+		const point = (angle, r) => [cx + Math.cos(angle) * r, cy + Math.sin(angle) * r]
+
+		$('slices').replaceChildren(...names.map((_, i) => {
+			const start = i * slice - Math.PI / 2
+			const p = document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
+			p.setAttribute('points', [[cx, cy], point(start, far), point(start + slice, far)].join(' '))
+			p.onclick = () => jc.sendMessage('teleport', { index: i + 1 })
+			return p
+		}))
+
+		$('labels').replaceChildren(...names.map((name, i) => {
+			const [x, y] = point((i + 0.5) * slice - Math.PI / 2, labelRadius)
+			return Object.assign(document.createElement('div'), { className: 'label', textContent: name, style: `left: ${x}px; top: ${y}px; font-size: ${scale * 30}px` })
+		}))
+	}
+
+	addEventListener('resize', render)
+
+	jc.on('init', d => {
+		closeKey = d.close_key
+		names = list(d.names)
+		render()
+	})
+</script>
+</body>
+</html>

@@ -1,3 +1,3 @@
 Net.AddEvent("registerLoginResult", function(msg)
-	Chat.Print(msg)
+	Event.Fire("AddChatMessage", { parts = { { text = msg } } })
 end)

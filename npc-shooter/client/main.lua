@@ -13,7 +13,7 @@ local function set_firing(enable)
 end
 
 Event.Add("OnKeyDown", function(key)
-	if key == FIRE_KEY and not Chat.IsTyping() then
+	if key == FIRE_KEY then
 		set_firing(true)
 	end
 end)

@@ -29,7 +29,7 @@ Event.Add("OnResourceStop", function(name)
 end)
 
 Event.Add("OnKeyDown", function(key)
-	if key == Key.F and not Chat.IsTyping() then
+	if key == Key.F then
 		local player = World.LocalPlayer():AsPlayer()
 
 		player:GoRagdoll()

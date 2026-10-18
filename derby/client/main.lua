@@ -19,7 +19,7 @@ Net.AddEvent("Derby:DisableAbilities", function()
 end)
 
 Net.AddEvent("Derby:StartDenied", function(data)
-    Chat.Print(data.msg)
+    Event.Fire("AddChatMessage", { parts = { { text = data.msg } } })
 end)
 
 Net.AddEvent("Derby:EnableAbilities", function()

@@ -1,77 +1,62 @@
 local categories = require("animations")
 
 local open_key = Key.Y
+
+local webview = WebView.Create("animation-menu", {
+	url = "resource://animation-menu/client/ui.html",
+	size = Render.GetSize(),
+	visible = false,
+})
+
 local open = false
 
--- path of the animation clicked in the list, played with the Play button
-local selected = nil
+-- path of the animation playing, the page marks it in the list
+local current = nil
 
-function toggleOpen()
-	open = not open
+local function sendCurrent()
+	local player = World.LocalPlayer()
+	local animation = player and player:AsPlayer():GetAnimation() or ""
+
+	if animation ~= current then
+		current = animation
+		WebView.SendMessage(webview, "current", { path = current })
+	end
+end
+
+local function setOpen(value)
+	open = value
 	Input.SetEnabled(not open)
 	UI.SetCursorVisible(open)
+	WebView.SetVisible(webview, open)
+	WebView.SetInputEnabled(webview, open)
+
+	if open then
+		WebView.BringToFront(webview)
+		WebView.Focus(webview)
+		sendCurrent()
+	else
+		WebView.BlurAll()
+	end
 end
 
 Event.Add("OnKeyUp", function(key)
-	if key == open_key and not Chat.IsTyping() then
-		toggleOpen()
+	if key == open_key and not open then
+		setOpen(true)
 	end
 end)
 
-Event.Add("OnRender", function()
-	if open then
-		renderMenu()
+Timer.Set(function()
+	if open then sendCurrent() end
+end, 250, -1)
+
+WebView.SetMessageHandler(webview, function(event, data)
+	if event == "close" then
+		setOpen(false)
+	elseif event == "play" then
+		Local.PlayAnimation(data.path, true)
+	elseif event == "stop" then
+		Local.StopAnimation()
 	end
 end)
 
-function renderMenu()
-	local player = World.LocalPlayer()
-	local current = player and player:AsPlayer():GetAnimation() or ""
-
-	local render_size = Render.GetSize()
-	local window_width = math.min(720, math.max(480, render_size.x * 0.4))
-	local window_height = math.min(650, math.max(300, render_size.y * 0.7))
-
-	UI.SetNextWindowSize(vec2(window_width, window_height), 0)
-	UI.SetNextWindowPos(vec2(render_size.x * 0.5 - window_width / 2, render_size.y * 0.5 - window_height / 2), 0)
-
-	if UI.Begin("Animations", UI.WindowFlags_NoCollapse) then
-		local button_width = (UI.GetContentRegionAvail().x - 8) / 2
-
-		if UI.Button("Play", vec2(button_width, 30)) and selected then
-			Local.PlayAnimation(selected, true)
-		end
-
-		UI.SameLine(0, 8)
-
-		if UI.Button("Stop", vec2(button_width, 30)) then
-			Local.StopAnimation()
-		end
-
-		UI.TextDisabled("Select an animation and press Play")
-		UI.Separator()
-
-		if UI.BeginTabBar("AnimationCategories", 0) then
-			for _, category in ipairs(categories) do
-				if UI.BeginTabItem(category.category) then
-					if UI.BeginChild("AnimationList", vec2(0, UI.GetContentRegionAvail().y), 0, 0) then
-						for _, animation in ipairs(category.animations) do
-							local label = animation.name .. (animation.path == current and "  (playing)" or "")
-
-							if UI.Selectable(label .. "##" .. animation.path, animation.path == selected) then
-								selected = animation.path
-							end
-						end
-					end
-
-					UI.EndChild()
-					UI.EndTabItem()
-				end
-			end
-
-			UI.EndTabBar()
-		end
-	end
-
-	UI.End()
-end
+WebView.SendMessage(webview, "init", { close_key = open_key, categories = categories })
