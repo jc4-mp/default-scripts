@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Chat</title>
+<style>
+	* { box-sizing: border-box; margin: 0; }
+	html, body { height: 100%; overflow: hidden; background: transparent; }
+	body { display: flex; flex-direction: column; justify-content: flex-end; font: 14px/18px Segoe UI, sans-serif; color: #fff; text-shadow: 1px 1px 0 #000; }
+	#log { overflow: hidden; padding: 4px 6px; word-wrap: break-word; }
+	#in { display: none; margin-top: 4px; padding: 5px 6px; border: 0; outline: 0; font: inherit; color: #fff; background: rgba(0, 0, 0, 0.6); }
+	.open #log { overflow-y: auto; background: rgba(0, 0, 0, 0.35); }
+	.open #in { display: block; }
+</style>
+</head>
+<body>
+<div id="log"></div>
+<input id="in" maxlength="200">
+<script>
+	const log = document.getElementById('log'), input = document.getElementById('in'), bridge = window.JC4MP
+
+	bridge.on('msg', text => {
+		log.append(Object.assign(document.createElement('div'), { textContent: text }))
+		while (log.children.length > 100) log.firstChild.remove()
+		log.scrollTop = log.scrollHeight
+	})
+
+	bridge.on('open', open => {
+		document.body.classList.toggle('open', open)
+		input.value = ''
+		input.focus()
+	})
+
+	input.onblur = () => document.body.classList.contains('open') && setTimeout(() => input.focus())
+
+	input.onkeydown = e => {
+		if (e.key === 'Enter') bridge.sendMessage('send', input.value)
+		else if (e.key === 'Escape') bridge.sendMessage('close', '')
+	}
+</script>
+</body>
+</html>
