@@ -1,4 +1,5 @@
--- network statistics and diagnostics on the middle-left of the screen, toggled with /netstats
+-- network statistics and diagnostics on the middle-left of the screen, toggled with /netstats. in non-production
+-- clients /simping ms and /simjitter ms simulate a slower connection (see Client.SetNetSim), /netsim turns it off
 
 local REFRESH_SECONDS = 0.5
 local WIDTH = 720
@@ -44,6 +45,12 @@ local function percent(part, total)
 	return total > 0 and part * 100 / total or 0
 end
 
+local function get_net_sim()
+	if Client.GetNetSim then return Client.GetNetSim() end
+
+	return 0, 0
+end
+
 local function build_lines(stats)
 	local out = {}
 
@@ -78,6 +85,13 @@ local function build_lines(stats)
 	add(string.format("Connected %s", fmt_duration(p.connectedSeconds)))
 	add(string.format("Ping %d ms (rtt %d, variance %d, last %d, lowest %d)", ping, p.rtt, p.rttVariance, p.lastRtt, p.lowestRtt),
 		level_color(ping, 80, 150))
+
+	local sim_ping, sim_jitter = get_net_sim()
+
+	if sim_ping > 0 or sim_jitter > 0 then
+		add(string.format("Simulated +%d ms rtt, jitter 0-%d ms (not in the ping above)", sim_ping, sim_jitter), COLOR_WARN)
+	end
+
 	add(string.format("Packet loss %.2f%% (variance %.2f%%)", p.packetLoss, p.packetLossVariance), level_color(p.packetLoss, 1, 5))
 	add(string.format("Reliable lost %d / %d (%.2f%%)", p.reliableLost, p.reliableSent, percent(p.reliableLost, p.reliableSent)),
 		level_color(percent(p.reliableLost, p.reliableSent), 1, 5))
@@ -122,11 +136,31 @@ local function build_lines(stats)
 	return out
 end
 
-Cmd.Add("netstats", function()
-	visible = not visible
+local function set_visible(state)
+	visible = state
 	last_refresh = -math.huge
 	WebView.SetVisible(webview, visible)
-end)
+end
+
+Cmd.Add("netstats", function() set_visible(not visible) end)
+
+if Client.SetNetSim then
+	local function sim_command(name, set)
+		Cmd.Add(name, function(ms)
+			ms = tonumber(ms)
+
+			if not ms then error("usage: /" .. name .. " ms", 0) end
+
+			set(math.max(math.floor(ms), 0))
+			set_visible(true)
+		end)
+	end
+
+	sim_command("simping", function(ms) Client.SetNetSim(ms, select(2, get_net_sim())) end)
+	sim_command("simjitter", function(ms) Client.SetNetSim(get_net_sim(), ms) end)
+
+	Cmd.Add("netsim", function() Client.SetNetSim(0, 0) end)
+end
 
 -- Client.GetNetStats must be read on the update thread
 
