@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Drones</title>
+<style>
+	* { box-sizing: border-box; margin: 0; }
+	html, body { height: 100%; overflow: hidden; background: transparent; }
+	body { display: flex; align-items: center; font: 13px/1.35 "Segoe UI", sans-serif; color: #e8eef2; }
+	#panel { width: 100%; padding: 12px 14px; border-radius: 8px; background: rgba(12, 18, 24, 0.78); border: 1px solid rgba(110, 200, 255, 0.25); }
+	h1 { display: flex; justify-content: space-between; align-items: baseline; font-size: 15px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #6ec8ff; }
+	h1 span { font-size: 12px; font-weight: 400; letter-spacing: 0; color: #9fb2bf; }
+	#pips { display: flex; gap: 4px; margin: 8px 0 10px; }
+	.pip { flex: 1; height: 5px; border-radius: 3px; background: rgba(255, 255, 255, 0.12); }
+	.pip.on { background: #6ec8ff; }
+	.row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+	.row b { font-weight: 600; }
+	.label { color: #9fb2bf; }
+	#status { margin: 8px 0 10px; padding: 5px 8px; border-radius: 4px; text-align: center; font-weight: 600; background: rgba(255, 255, 255, 0.06); color: #9fb2bf; }
+	#status.firing { background: rgba(255, 90, 80, 0.2); color: #ff7a70; }
+	#status.hunting { background: rgba(255, 190, 60, 0.2); color: #ffc85a; }
+	#keys { border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 8px; }
+	.key { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+	kbd { min-width: 22px; padding: 1px 0; border-radius: 4px; text-align: center; font: 600 12px Consolas, monospace; background: #e8eef2; color: #0c1218; box-shadow: 0 2px 0 #7d8b94; }
+	.hint { margin-top: 6px; font-size: 11px; color: #6f818c; }
+</style>
+</head>
+<body>
+<div id="panel">
+	<h1>Drones <span id="count">0 / 0</span></h1>
+	<div id="pips"></div>
+	<div class="row"><span class="label">Mode</span><b id="mode">-</b></div>
+	<div class="row"><span class="label">Next spawn</span><b id="next">-</b></div>
+	<div id="status">Holding fire</div>
+	<div id="keys"></div>
+	<div class="hint">numpad keys</div>
+</div>
+<script>
+	const MODES = { follow: 'Following you', hold: 'Holding position', spot: 'At your marker' }
+	const $ = id => document.getElementById(id)
+
+	window.JC4MP.on('state', s => {
+		$('count').textContent = `${s.count} / ${s.max}`
+		$('pips').replaceChildren(...Array.from({ length: s.max }, (_, i) => Object.assign(document.createElement('div'), { className: i < s.count ? 'pip on' : 'pip' })))
+		$('mode').textContent = MODES[s.mode] || s.mode
+		$('next').textContent = s.next_type
+
+		const status = $('status')
+
+		status.className = s.prey ? 'hunting' : s.firing ? 'firing' : ''
+		status.textContent = s.prey ? `Hunting ${s.prey}` : s.firing ? 'Firing' : s.count ? 'Holding fire' : 'No drones'
+
+		$('keys').replaceChildren(...(s.keys || []).map(k => {
+			const row = Object.assign(document.createElement('div'), { className: 'key' })
+
+			row.append(Object.assign(document.createElement('kbd'), { textContent: k.key }), k.text)
+
+			return row
+		}))
+	})
+</script>
+</body>
+</html>
