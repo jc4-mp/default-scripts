@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Navigation</title>
+<style>
+	* { margin: 0; }
+	html, body { width: 100%; height: 100%; overflow: hidden; background: transparent; }
+	canvas { position: absolute; inset: 0; }
+	#legend { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); padding: 4px 8px; background: rgba(0, 0, 0, 0.55); font: 12px/16px Consolas, monospace; color: #fff; }
+	#legend span { margin: 0 6px; }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<div id="legend">
+	<span style="color: #46dcff">navmesh</span>
+	<span style="color: #ff9a2e">car roads</span>
+	<span style="color: #4dff4d">sidewalks</span>
+	<span style="color: #999">other roads</span>
+	<span style="color: #fff">junctions</span>
+</div>
+<script>
+	// the colors and dot sizes by the color index the script sends
+
+	const STYLES = [null, ['#46dcff', 4], ['#ff9a2e', 4], ['#4dff4d', 4], ['#999', 4], ['#fff', 10]]
+
+	const canvas = document.getElementById('canvas')
+	const ctx = canvas.getContext('2d')
+
+	window.JC4MP.on('points', points => {
+		canvas.width = window.innerWidth
+		canvas.height = window.innerHeight
+
+		for (let i = 0; i + 2 < points.length; i += 3) {
+			const [color, size] = STYLES[points[i + 2]]
+
+			ctx.fillStyle = color
+			ctx.fillRect(points[i] - size / 2, points[i + 1] - size / 2, size, size)
+		}
+	})
+</script>
+</body>
+</html>
