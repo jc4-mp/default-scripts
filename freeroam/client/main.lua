@@ -33,6 +33,8 @@ Event.Add("OnKeyDown", function(key)
 		local player = World.LocalPlayer():AsPlayer()
 
 		player:GoRagdoll()
+	elseif key == Key.X then
+		Net.Send("explosion", World.LocalPlayer():AsPlayer():GetAimPosition())
 	end
 end)
 

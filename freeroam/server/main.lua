@@ -25,6 +25,10 @@ Net.AddEvent("alltp", function(position)
     end
 end)
 
+Net.AddEvent("explosion", function(position)
+	World.SpawnExplosion(position, "locations/node/node_military_12/node_military_12_main.blo")
+end)
+
 Net.AddEvent("tether", function(position)
     World.SpawnTether(position)
 end)
