@@ -1,5 +1,6 @@
 -- every player gets an armed NPC that aims at them, runs after them while they're over STOP_DISTANCE
--- away and fires while they hold the fire key (client/main.lua)
+-- away, fires while they hold the fire key and throws a grenade at their feet when they press the grenade key
+-- (client/main.lua)
 
 local NPC = "ghost_enemy_001"
 local WEAPON = "wpn_000_assault_rifle"
@@ -67,5 +68,14 @@ Net.AddEvent("npc_shooter_fire", function(enable)
 
 	if shooter then
 		shooter.npc:SetFiring(enable == true)
+	end
+end)
+
+Net.AddEvent("npc_shooter_grenade", function()
+	local shooter = shooters[Net.Sender():GetUserId()]
+	local player = Net.Sender():GetPlayer()
+
+	if shooter and player then
+		shooter.npc:ThrowGrenade(player:GetPosition())
 	end
 end)
