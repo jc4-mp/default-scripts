@@ -12,6 +12,7 @@ Event.Add("OnResourceStart", function(name)
 
 		Players.SetTagsEnabled(true)
 		World.SetTime(8)
+		Local.SetHoverboardEnabled(true)
 	end
 end)
 
@@ -33,8 +34,8 @@ Event.Add("OnKeyDown", function(key)
 		local player = World.LocalPlayer():AsPlayer()
 
 		player:GoRagdoll()
-	elseif key == Key.X then
-		Net.Send("explosion", World.LocalPlayer():AsPlayer():GetAimPosition())
+	--elseif key == Key.X then
+		--Net.Send("explosion", World.LocalPlayer():AsPlayer():GetAimPosition())
 	end
 end)
 

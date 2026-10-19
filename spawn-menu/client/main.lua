@@ -1,6 +1,6 @@
 local spawnlist = require("spawn_list")
 
-local open_key = Key.V
+local open_key = Key.B
 
 local webview = WebView.Create("spawn-menu", {
 	url = "resource://spawn-menu/client/ui.html",
