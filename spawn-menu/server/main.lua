@@ -52,6 +52,14 @@ Net.AddEvent("spawnMg", function(id, position)
     World.SpawnMountedGun(id, position)
 end)
 
+Net.AddEvent("skin", function(skin)
+    local player = Net.Sender():GetPlayer()
+
+    if player then
+        player:AsPlayer():SetSkin(skin)
+    end
+end)
+
 Net.AddEvent("weapon", function(weapon_id)
     Net.Sender():GetPlayer():AsPlayer():GiveWeapon(weapon_id, 500, WeaponSlot.Primary)
 end)

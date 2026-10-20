@@ -1238,10 +1238,6 @@ return {
                     id = "wpn_202_cannon"
                 },
                 {
-                    name = "Cannon (Rebel)",
-                    id = "wpn_202_cannon_rebel"
-                },
-                {
                     name = "Cannon (AOC)",
                     id = "wpn_202_cannon_aoc"
                 },
@@ -1250,20 +1246,12 @@ return {
                     id = "wpn_203_aa_gun"
                 },
                 {
-                    name = "Anti-Air Gun (Rebel)",
-                    id = "wpn_203_aa_gun_rebel"
-                },
-                {
                     name = "Anti-Air Gun (AOC)",
                     id = "wpn_203_aa_gun_aoc"
                 },
                 {
                     name = "Mounted Mortar",
                     id = "wpn_204_mortar_mounted"
-                },
-                {
-                    name = "Mounted Mortar (Rebel)",
-                    id = "wpn_204_mortar_mounted_rebel"
                 },
                 {
                     name = "Mounted Mortar (AOC)",
@@ -1277,22 +1265,6 @@ return {
                     name = "Minigun (AOC)",
                     id = "wpn_201_minigun_aoc"
                 },
-                {
-                    name = "Mounted Minigun",
-                    id = "wpn_201_minigun_mount"
-                },
-                {
-                    name = "Mounted Minigun (Rebel)",
-                    id = "wpn_201_minigun_mount_rebel"
-                },
-                {
-                    name = "Mounted Minigun (Military)",
-                    id = "wpn_201_minigun_mount_military"
-                },
-                {
-                    name = "Illapa Defence Weapon",
-                    id = "illapa_defence_weapon"
-                }
             }
         },
         {
@@ -1909,18 +1881,15 @@ return {
             button_name = "Change Skin",
             items = {
                 { separator = true, name = "Main Characters" },
-                { name = "Rico", id = "rico" },
+                { name = "Rico", id = "rico_debug" },
                 { name = "Mira", id = "mira" },
                 { name = "Sargento", id = "sargento" },
                 { name = "Gabriela", id = "gabriela" },
                 { name = "Sheldon", id = "sheldon" },
                 { name = "Javi", id = "javi" },
                 { name = "Oscar", id = "oscar" },
-                { name = "Oscar Young", id = "oscar_young" }, -- crashes
                 { name = "Cesar", id = "cesar" },
                 { name = "Lanza", id = "lanza" },
-                { name = "Dictator", id = "dictator" }, -- crashes
-                { name = "Dictator Guard", id = "dictator_guard" }, -- crashes
                 { name = "Garland", id = "garland" },
                 { name = "Izzy", id = "izzy" },
                 { separator = true, name = "Combatants" },
@@ -1936,10 +1905,6 @@ return {
                 { name = "Sniper Enemy", id = "sniper_enemy_001" },
                 { name = "Super Elite Enemy", id = "super_elite_enemy_001" },
                 { name = "Titan Enemy", id = "titan_enemy_001" },
-                { name = "Female Rebel 1 Avg", id = "female_rebel_001_avg" },  -- crashes
-                { name = "Female Rebel 2 Avg", id = "female_rebel_002_avg" },  -- crashes
-                { name = "Female Rebel 3 Avg", id = "female_rebel_003_avg" },  -- crashes
-                { name = "Female Rebel 4 Avg", id = "female_rebel_004_avg" },  -- crashes
                 { name = "Female Rebel Prisoner 1", id = "female_rebel_prisoner_01" },
                 { name = "Female Rebel Prisoner 2", id = "female_rebel_prisoner_02" },
                 { name = "Female Rebel Prisoner 3", id = "female_rebel_prisoner_03" },
@@ -1952,10 +1917,6 @@ return {
                 { name = "Female Rebel Tier 3 1", id = "female_rebel_tier_3_01" },
                 { name = "Female Rebel Tier 3 2", id = "female_rebel_tier_3_02" },
                 { name = "Female Rebel Tier 3 3", id = "female_rebel_tier_3_03" },
-                { name = "Male Rebel 1 Avg", id = "male_rebel_001_avg" },  -- crashes
-                { name = "Male Rebel 2 Avg", id = "male_rebel_002_avg" },  -- crashes
-                { name = "Male Rebel 3 Avg", id = "male_rebel_003_avg" },  -- crashes
-                { name = "Male Rebel 4 Avg", id = "male_rebel_004_avg" },  -- crashes
                 { name = "Male Rebel Prisoner 1", id = "male_rebel_prisoner_01" },
                 { name = "Male Rebel Prisoner 2", id = "male_rebel_prisoner_02" },
                 { name = "Male Rebel Prisoner 3", id = "male_rebel_prisoner_03" },
@@ -1977,22 +1938,7 @@ return {
                 { name = "Sargentos Rebel Male 1", id = "sargentos_rebel_male_01" },
                 { name = "Sargentos Rebel Male 2", id = "sargentos_rebel_male_02" },
                 { name = "Sargentos Rebel Male 3", id = "sargentos_rebel_male_03" },
-                { name = "Npc Mil Parachute", id = "npc_mil_parachute" }, -- crashes
                 { separator = true, name = "Civilians" },
-                { name = "Female Gen 1", id = "civ_female_gen_001" }, -- crashes
-                { name = "Female Gen 2", id = "civ_female_gen_002" }, -- crashes
-                { name = "Female Gen 3", id = "civ_female_gen_003" }, -- crashes
-                { name = "Female Gen 4", id = "civ_female_gen_004" }, -- crashes
-                { name = "Female Gen 5", id = "civ_female_gen_005" }, -- crashes
-                { name = "Female Gen 6", id = "civ_female_gen_006" }, -- crashes
-                { name = "Male Gen 1", id = "civ_male_gen_001" }, -- crashes
-                { name = "Male Gen 2", id = "civ_male_gen_002" }, -- crashes
-                { name = "Male Gen 3", id = "civ_male_gen_003" }, -- crashes
-                { name = "Male Gen 4", id = "civ_male_gen_004" }, -- crashes
-                { name = "Male Gen 5", id = "civ_male_gen_005" }, -- crashes
-                { name = "Male Gen 6", id = "civ_male_gen_006" }, -- crashes
-                { name = "Alpine Scientist 1", id = "civ_alpine_scientist_001" }, -- crashes
-                { name = "Alpine Scientist 2", id = "civ_alpine_scientist_002" }, -- crashes
                 { name = "Alpine Scientist Female", id = "civ_alpine_scientist_female" },
                 { name = "Alpine Scientist Male", id = "civ_alpine_scientist_male" },
                 { name = "Scientist Female", id = "civ_scientist_female" },
@@ -2012,7 +1958,6 @@ return {
                 { name = "Lumberyard Male", id = "civ_lumberyard_male_01" },
                 { name = "Mechanic Female", id = "civ_mechanic_female_01" },
                 { name = "Mechanic Male", id = "civ_mechanic_male_01" },
-                { name = "Steelworker", id = "civ_steelworker_001" }, -- crashes
                 { name = "Steelworker Female", id = "civ_steelworker_female_01" },
                 { name = "Evil Target Female", id = "civ_evil_target_female_01" },
                 { name = "Evil Target Male", id = "civ_evil_target_male_01" },
@@ -2030,7 +1975,6 @@ return {
                 { name = "Prisoner Female", id = "civ_prisoner_female" },
                 { name = "Prisoner Male", id = "civ_prisoner_male" },
                 { name = "Bolo Santosi", id = "civ_bolo_santosi_01" },
-                { name = "Bouncer", id = "civ_bouncer_001" }, -- crashes
                 { name = "Brrd Male", id = "civ_brrd_male_01" },
                 { name = "Greenman Female", id = "civ_greenman_female_01" },
                 { name = "Greenman Male", id = "civ_greenman_male_01" },
@@ -2038,9 +1982,6 @@ return {
                 { name = "Rome Male", id = "civ_rome_male_01" },
                 { name = "Beachgoer Female", id = "civ_beachgoer_female_01" },
                 { name = "Beachgoer Male", id = "civ_beachgoer_male_01" },
-                { name = "Dockworker Female", id = "civ_dockworker_female_01" }, -- crashes
-                { name = "Dockworker Male", id = "civ_dockworker_male_01" }, -- crashes
-                { name = "Spear Fisherman", id = "civ_spear_fisherman_001" }, -- crashes
                 { name = "Favela Female", id = "civ_favela_female_01" },
                 { name = "Favela Male", id = "civ_favela_male_01" },
                 { name = "Rainforest Female", id = "civ_rainforest_female_01" },
@@ -2082,20 +2023,9 @@ return {
                 { name = "Street Musician Female", id = "civ_street_musician_female_01" },
                 { name = "Street Musician Male", id = "civ_street_musician_male_01" },
                 { separator = true, name = "Animals" },
-                { name = "Caracu Cow 1", id = "caracu_cow_01" }, -- crashes
-                { name = "Caracu Cow 2", id = "caracu_cow_02" }, -- crashes
-                { name = "Cow Base", id = "cow_base" }, -- crashes
-                { name = "Holando Argentino Cow 1", id = "holando_argentino_cow_01" }, -- crashes
-                { name = "Holando Argentino Cow 2", id = "holando_argentino_cow_02" }, -- crashes
-                { name = "Indo Brazilian Cattle Bull", id = "indo_brazilian_cattle01_bull" }, -- crashes
-                { name = "Indo Brazilian Cattle Cow", id = "indo_brazilian_cattle01_cow" }, -- crashes
-                { name = "Power Cow", id = "power_cow" }, -- crashes
                 { name = "Deer Buck", id = "deer_buck" },
                 { name = "Deer Doe", id = "deer_doe" },
                 { name = "Dog", id = "dog" },
-                { name = "Bhuj Goat", id = "bhuj_goat" }, -- crashes
-                { name = "Goat Generic", id = "goat_generic" }, -- crashes
-                { name = "Repartida Goat", id = "repartida_goat" }, -- crashes
                 { name = "Tapir", id = "tapir" },
                 { name = "Llama", id = "llama" },
                 { name = "Llama 2", id = "llama_02" },

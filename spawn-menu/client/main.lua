@@ -31,7 +31,7 @@ local function spawn(category, item)
 	elseif category.type == "mounted_gun" then
 		Net.Send("spawnMg", item.id, World.LocalPlayer():AsPlayer():GetAimPosition())
 	elseif category.type == "skin" then
-		Local.SetSkin(item.id)
+		Net.Send("skin", item.id)
 	elseif category.type == "weapon" then
 		Net.Send("weapon", item.id)
 	end

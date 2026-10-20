@@ -1,7 +1,8 @@
--- a minimal chat: T opens it, Enter sends, Escape closes. /name args runs a Cmd.Add command
+-- the chat: T opens it, Enter sends, Escape closes, Up/Down browse what was sent. /name args runs a Cmd.Add command,
+-- other resources add lines with Event.Fire("AddChatMessage", { parts = { { text = ... } } })
 
-local webview = WebView.Create("simple-chat", {
-	url = "resource://simple-chat/client/ui.html",
+local webview = WebView.Create("chat", {
+	url = "resource://chat/client/ui.html",
 	position = vec2(10, Render.GetSize().y - 380),
 	size = vec2(520, 300),
 })
@@ -45,7 +46,7 @@ WebView.SetMessageHandler(webview, function(event, text)
 
 	local name, rest = text:match("^/(%S+)%s*(.*)")
 
-	if not name then return Net.Send("SimpleChat", text) end
+	if not name then return Net.Send("chat:send", text) end
 
 	local args = {}
 
@@ -57,3 +58,17 @@ WebView.SetMessageHandler(webview, function(event, text)
 end)
 
 Event.Add("OnChat", function(_, msg) add(msg) end)
+
+-- a line from another resource: its parts' texts joined
+
+Event.Add("AddChatMessage", function(message)
+	local parts = type(message) == "table" and message.parts
+
+	if type(parts) ~= "table" then return end
+
+	local texts = {}
+
+	for i, part in ipairs(parts) do texts[i] = tostring(part.text or "") end
+
+	add(table.concat(texts))
+end)

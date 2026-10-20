@@ -200,7 +200,7 @@ Net.AddEvent("Derby:StartRequest", function(_)
         local yaw = math.atan2(pos.x - CENTER.x, pos.z - CENTER.z)
 
         local half_yaw = yaw * 0.5
-        local rot = quat(math.cos(half_yaw), 0, math.sin(half_yaw), 0)
+        local rot = quat(0, math.sin(half_yaw), 0, math.cos(half_yaw))
 
         local veh = World.SpawnVehicle(model, pos, vec3(0, math.deg(yaw), 0))
 

@@ -30,7 +30,11 @@ Net.AddEvent("explosion", function(position)
 end)
 
 Net.AddEvent("tether", function(position)
-    World.SpawnTether(position)
+    local player = Net.Sender():GetPlayer()
+
+    if player then
+        World.SpawnTether(position, player, vec3(0, 1, 0))
+    end
 end)
 
 Event.Add("OnVehicleDamage", function(vehicle, damager, loss, hitbone, weaponHash, hitposition)

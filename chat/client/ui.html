@@ -19,6 +19,10 @@
 <script>
 	const log = document.getElementById('log'), input = document.getElementById('in'), bridge = window.JC4MP
 
+	// what was sent (messages and commands), newest last. Up/Down browse it, past the newest the draft comes back
+	const HISTORY_MAX = 50, history = []
+	let browse = 0, draft = ''
+
 	bridge.on('msg', text => {
 		log.append(Object.assign(document.createElement('div'), { textContent: text }))
 		while (log.children.length > 100) log.firstChild.remove()
@@ -28,14 +32,35 @@
 	bridge.on('open', open => {
 		document.body.classList.toggle('open', open)
 		input.value = ''
+		browse = history.length
 		input.focus()
 	})
 
 	input.onblur = () => document.body.classList.contains('open') && setTimeout(() => input.focus())
 
 	input.onkeydown = e => {
-		if (e.key === 'Enter') bridge.sendMessage('send', input.value)
+		if (e.key === 'Enter') {
+			const text = input.value
+
+			if (text.trim() && history[history.length - 1] !== text) {
+				history.push(text)
+				if (history.length > HISTORY_MAX) history.shift()
+			}
+
+			bridge.sendMessage('send', text)
+		}
 		else if (e.key === 'Escape') bridge.sendMessage('close', '')
+		else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+			e.preventDefault()
+
+			const next = browse + (e.key === 'ArrowUp' ? -1 : 1)
+
+			if (next < 0 || next > history.length) return
+			if (browse === history.length) draft = input.value
+
+			browse = next
+			input.value = browse === history.length ? draft : history[browse]
+		}
 	}
 </script>
 </body>

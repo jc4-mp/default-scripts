@@ -1536,7 +1536,7 @@ return {
             button_name = "Change Skin",
             items = {
                 { separator = true, name = "Main Characters" },
-                { name = "Rico", id = "rico" },
+                { name = "Rico", id = "rico_debug" },
                 { name = "Mira", id = "mira" },
                 { name = "Sargento", id = "sargento" },
                 { name = "Gabriela", id = "gabriela" },
@@ -1665,8 +1665,6 @@ return {
                 { name = "Rome Male", id = "civ_rome_male_01" },
                 { name = "Beachgoer Female", id = "civ_beachgoer_female_01" },
                 { name = "Beachgoer Male", id = "civ_beachgoer_male_01" },
-                { name = "Dockworker Female", id = "civ_dockworker_female_01" }, -- crashes
-                { name = "Dockworker Male", id = "civ_dockworker_male_01" }, -- crashes
                 -- { name = "Spear Fisherman", id = "civ_spear_fisherman_001" }, -- crashes
                 { name = "Favela Female", id = "civ_favela_female_01" },
                 { name = "Favela Male", id = "civ_favela_male_01" },
