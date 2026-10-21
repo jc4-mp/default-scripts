@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>C4</title>
+<style>
+	* { box-sizing: border-box; margin: 0; }
+	html, body { height: 100%; overflow: hidden; background: transparent; }
+	body { font: 13px/1.35 "Segoe UI", sans-serif; color: #eef0f2; }
+	#panel { width: 100%; padding: 12px 14px; border-radius: 8px; background: rgba(18, 14, 12, 0.8); border: 1px solid rgba(255, 120, 70, 0.3); }
+	h1 { display: flex; justify-content: space-between; align-items: baseline; font-size: 15px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #ff7a46; }
+	h1 span { font-size: 12px; font-weight: 400; letter-spacing: 0; color: #b5a79f; }
+	#planting { display: none; margin: 8px 0 2px; }
+	#planting.on { display: block; }
+	#planting .label { font-weight: 600; color: #ffc85a; }
+	#bar { height: 5px; margin-top: 4px; border-radius: 3px; background: rgba(255, 255, 255, 0.12); overflow: hidden; }
+	#fill { height: 100%; width: 0; background: #ffc85a; }
+	#fill.run { animation: fill var(--ms) linear forwards; }
+	@keyframes fill { to { width: 100%; } }
+	#list { margin: 8px 0 10px; }
+	.c4 { display: flex; justify-content: space-between; padding: 4px 8px; border-radius: 4px; color: #b5a79f; }
+	.c4.selected { background: rgba(255, 120, 70, 0.2); color: #ffb08f; font-weight: 600; }
+	.c4 b { font-variant-numeric: tabular-nums; }
+	#keys { border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 8px; }
+	.key { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+	kbd { min-width: 22px; padding: 1px 4px; border-radius: 4px; text-align: center; font: 600 12px Consolas, monospace; background: #eef0f2; color: #120e0c; box-shadow: 0 2px 0 #8a7f79; }
+	.hint { margin-top: 6px; font-size: 11px; color: #85776f; }
+</style>
+</head>
+<body>
+<div id="panel">
+	<h1>C4 <span id="count">0 / 0</span></h1>
+	<div id="planting"><div class="label">Planting...</div><div id="bar"><div id="fill"></div></div></div>
+	<div id="list"></div>
+	<div id="keys">
+		<div class="key"><kbd>Z</kbd>detonate selected</div>
+		<div class="key"><kbd>Shift</kbd>+<kbd>Z</kbd>detonate all</div>
+		<div class="key"><kbd>V</kbd>disarm selected</div>
+		<div class="key"><kbd>C</kbd>select next</div>
+	</div>
+	<div class="hint">type /c4 to plant another</div>
+</div>
+<script>
+	const $ = id => document.getElementById(id)
+	let was_planting = false
+
+	window.JC4MP.on('state', s => {
+		// an empty Lua table arrives as {}, not []
+		const distances = Object.values(s.distances || {})
+
+		$('count').textContent = `${distances.length} / ${s.max}`
+
+		$('list').replaceChildren(...distances.map((distance, i) => {
+			const row = Object.assign(document.createElement('div'), { className: i + 1 === s.selected ? 'c4 selected' : 'c4' })
+
+			row.append(`#${i + 1}`, Object.assign(document.createElement('b'), { textContent: `${distance} m` }))
+
+			return row
+		}))
+
+		$('planting').className = s.planting ? 'on' : ''
+
+		// the bar fills once per planting
+		if (s.planting && !was_planting) {
+			const fill = $('fill')
+
+			fill.style.setProperty('--ms', `${s.plant_ms}ms`)
+			fill.classList.remove('run')
+			void fill.offsetWidth
+			fill.classList.add('run')
+		}
+
+		was_planting = s.planting
+	})
+</script>
+</body>
+</html>
